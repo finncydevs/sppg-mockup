@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SPPG Super App - Prototipe Demo Lengkap</title>
+    <title>SPPG Super App - Prototipe v2.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
@@ -11,12 +11,18 @@
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
 
     <style>
-        /* Simple style for sidebar scrollbar */
         .sidebar::-webkit-scrollbar { width: 5px; }
         .sidebar::-webkit-scrollbar-track { background: #f1f1f1; }
         .sidebar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
         .sidebar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
         .chevron-rotated { transform: rotate(90deg); }
+        .tab-active { border-color: #3b82f6; color: #3b82f6; background-color: #eff6ff; }
+        @media print {
+            body * { visibility: hidden; }
+            #print-area, #print-area * { visibility: visible; }
+            #print-area { position: absolute; left: 0; top: 0; width: 100%; }
+            .no-print { display: none; }
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
@@ -49,32 +55,48 @@
                     <span class="ml-3">Dashboard</span>
                 </a>
 
-                <div x-data="{ open: false }">
+                <div x-data="{ open: true }">
                     <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg">
-                        <span class="flex items-center"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h6M9 11.25h6m-6 4.5h6M5.25 6h.008v.008H5.25V6zm.75 4.5h.008v.008H6v-.008zm-.75 4.5h.008v.008H5.25v-.008zm13.5-9h.008v.008h-.008V6zm-.75 4.5h.008v.008h-.008v-.008zm.75 4.5h.008v.008h-.008v-.008z" /></svg><span class="ml-3">Operasional</span></span>
+                        <span class="flex items-center"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0l-.07.002z" /></svg><span class="ml-3">Perencanaan</span></span>
                         <svg class="chevron h-5 w-5 transition-transform" :class="{ 'chevron-rotated': open }" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
                     </button>
                     <div class="ml-4 pl-4 border-l border-gray-200" x-show="open" x-collapse>
-                        <a href="#" data-page="resep" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Manajemen Resep</a>
-                        <a href="#" data-page="siklus_menu" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Siklus Menu</a>
-                        <a href="#" data-page="pengadaan" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Pengadaan</a>
-                        <a href="#" data-page="penerimaan" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Penerimaan Barang</a>
-                        <a href="#" data-page="stok" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Manajemen Stok</a>
-                        <a href="#" data-page="produksi" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Produksi</a>
+                        <a href="#" data-page="perencanaan_menu" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Resep & Siklus Menu</a>
+                    </div>
+                </div>
+
+                <div x-data="{ open: true }">
+                    <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg">
+                        <span class="flex items-center"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h6M9 11.25h6m-6 4.5h6M5.25 6h.008v.008H5.25V6zm.75 4.5h.008v.008H6v-.008zm-.75 4.5h.008v.008H5.25v-.008zm13.5-9h.008v.008h-.008V6zm-.75 4.5h.008v.008h-.008v-.008zm.75 4.5h.008v.008h-.008v-.008z" /></svg><span class="ml-3">Proses Harian</span></span>
+                        <svg class="chevron h-5 w-5 transition-transform" :class="{ 'chevron-rotated': open }" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                    </button>
+                    <div class="ml-4 pl-4 border-l border-gray-200" x-show="open" x-collapse>
+                        <a href="#" data-page="pengadaan" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Pengadaan & Penerimaan</a>
+                        <a href="#" data-page="produksi_stok" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Produksi & Stok</a>
                         <a href="#" data-page="distribusi" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Distribusi</a>
+                    </div>
+                </div>
+                
+                <div x-data="{ open: true }">
+                    <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg">
+                        <span class="flex items-center"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /></svg><span class="ml-3">Administrasi & SDM</span></span>
+                        <svg class="chevron h-5 w-5 transition-transform" :class="{ 'chevron-rotated': open }" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                    </button>
+                    <div class="ml-4 pl-4 border-l border-gray-200" x-show="open" x-collapse>
+                        <a href="#" data-page="keuangan" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Keuangan</a>
+                        <a href="#" data-page="gaji" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Gaji Karyawan</a>
+                        <a href="#" data-page="absensi" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Absensi Karyawan</a>
+                        <a href="#" data-page="aset" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Manajemen Aset</a>
                     </div>
                 </div>
 
                 <div x-data="{ open: false }">
                     <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg">
-                        <span class="flex items-center"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /></svg><span class="ml-3">Administrasi</span></span>
+                        <span class="flex items-center"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg><span class="ml-3">Laporan</span></span>
                         <svg class="chevron h-5 w-5 transition-transform" :class="{ 'chevron-rotated': open }" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
                     </button>
-                    <div class="ml-4 pl-4 border-l border-gray-200" x-show="open" x-collapse>
-                        <a href="#" data-page="keuangan" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Keuangan</a>
-                        <a href="#" data-page="karyawan" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Data Karyawan</a>
-                        <a href="#" data-page="gaji" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Gaji Karyawan</a>
-                        <a href="#" data-page="absensi" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Absensi Karyawan</a>
+                     <div class="ml-4 pl-4 border-l border-gray-200" x-show="open" x-collapse>
+                        <a href="#" data-page="laporan_pengantaran" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Laporan Pengantaran</a>
                     </div>
                 </div>
 
@@ -84,12 +106,12 @@
                         <svg class="chevron h-5 w-5 transition-transform" :class="{ 'chevron-rotated': open }" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
                     </button>
                     <div class="ml-4 pl-4 border-l border-gray-200" x-show="open" x-collapse>
+                        <a href="#" data-page="master_karyawan" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Master Karyawan</a>
+                        <a href="#" data-page="master_supplier" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Master Supplier</a>
+                        <a href="#" data-page="master_sekolah" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Master Sekolah</a>
+                        <a href="#" data-page="master_user" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Master Pengguna</a>
                         <a href="#" data-page="profil_yayasan" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Profil Yayasan</a>
                         <a href="#" data-page="profil_sppg" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Profil SPPG</a>
-                        <a href="#" data-page="master_items" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Master Item</a>
-                        <a href="#" data-page="master_suppliers" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Master Supplier</a>
-                        <a href="#" data-page="master_schools" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Master Sekolah</a>
-                        <a href="#" data-page="master_users" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Master Pengguna</a>
                     </div>
                 </div>
             </nav>
@@ -109,8 +131,7 @@
             </header>
 
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
-                <div id="page-content">
-                    </div>
+                <div id="page-content"></div>
             </main>
         </div>
     </div>
@@ -118,12 +139,12 @@
     <div id="all-modals"></div>
     
     <div id="toast" class="fixed top-5 right-5 text-white py-3 px-5 rounded-lg shadow-md transform translate-x-[120%] transition-transform duration-300 z-50 flex items-center">
-        <div id="toast-icon" class="mr-3">
-             </div>
+        <div id="toast-icon" class="mr-3"></div>
         <p id="toast-message"></p>
     </div>
 
-    <script src="script.js"></script>
 
+    <script src="js/state.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>
