@@ -1,0 +1,11 @@
+body { font-family: 'Inter', sans-serif; }
+.sidebar { transition: transform 0.3s ease-in-out; }
+.modal-backdrop { transition: opacity 0.3s ease-in-out; }
+.modal-content { transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; }
+.submenu { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-in-out; }
+.submenu-open { max-height: 500px; /* Adjust as needed */ }
+.chevron-rotated { transform: rotate(90deg); }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #555; }
