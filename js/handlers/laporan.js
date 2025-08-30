@@ -1,5 +1,4 @@
 // js/handlers/laporan.js
-
 import * as Data from "../data.js";
 import {
   showToast,
@@ -7,11 +6,9 @@ import {
   formatInputDate,
   formatCurrency,
 } from "../main.js";
-
 // ===================================================================================
 // BAGIAN A: DASHBOARD / PELAPORAN
 // ===================================================================================
-
 export function setupPelaporanPage() {
   const today = new Date();
   const todayStr = formatInputDate(today);
@@ -67,7 +64,6 @@ export function setupPelaporanPage() {
 // ===================================================================================
 // BAGIAN B: LAPORAN PENGANTARAN
 // ===================================================================================
-
 export function setupLaporanPengantaranPage() {
   const dateInput = document.getElementById("laporan-tanggal");
   dateInput.value = formatInputDate(new Date());
@@ -101,68 +97,126 @@ function generateLaporanPengantaran() {
   }
 
   let html = `
-        <div id="print-area">
-            <div class="text-center mb-6">
-                <h2 class="text-2xl font-bold">${Data.mockProfilSPPG.nama}</h2>
-                <p class="text-sm">${Data.mockProfilSPPG.alamat}</p>
-                <h3 class="text-xl font-semibold mt-4">Laporan Pengantaran Harian</h3>
-                <p>Tanggal: ${formatDate(date)}</p>
-            </div>
-    `;
+    <div id="print-area">
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold">${Data.mockProfilSPPG.nama}</h2>
+        <p class="text-sm">${Data.mockProfilSPPG.alamat}</p>
+        <h3 class="text-xl font-semibold mt-4">Laporan Pengantaran Harian</h3>
+        <p>Tanggal: ${formatDate(date)}</p>
+      </div>
+  `;
 
+  // Group deliveries by school
   const deliveriesBySchool = {};
   shipmentsToday.forEach((shipment) => {
     shipment.delivery_lines.forEach((line) => {
       if (!deliveriesBySchool[line.school_id]) {
-        deliveriesBySchool[line.school_id] = { qty: 0, recipes: new Set() };
+        deliveriesBySchool[line.school_id] = {
+          school: Data.mockSchools.find((s) => s.id == line.school_id),
+          deliveries: [],
+        };
       }
-      deliveriesBySchool[line.school_id].qty += line.quantity;
-      const recipe = Data.mockRecipes.find((r) => r.id === shipment.recipe_id);
-      if (recipe) {
-        deliveriesBySchool[line.school_id].recipes.add(recipe.name);
-      }
+      deliveriesBySchool[line.school_id].deliveries.push({
+        shipment,
+        line,
+      });
     });
   });
 
-  html += `<table class="w-full text-sm text-left">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-100">
-                    <tr>
-                        <th class="px-6 py-3">Sekolah Tujuan</th>
-                        <th class="px-6 py-3">Menu Terkirim</th>
-                        <th class="px-6 py-3 text-right">Jumlah Porsi</th>
-                    </tr>
-                </thead>
-                <tbody>`;
-
+  // Generate documents for each school
   for (const schoolId in deliveriesBySchool) {
-    const school = Data.mockSchools.find((s) => s.id == schoolId);
-    const delivery = deliveriesBySchool[schoolId];
-    html += `
-            <tr class="bg-white border-b">
-                <td class="px-6 py-4 font-medium">${school.name}</td>
-                <td class="px-6 py-4">${[...delivery.recipes].join(", ")}</td>
-                <td class="px-6 py-4 text-right">${delivery.qty.toLocaleString(
-                  "id-ID"
-                )}</td>
-            </tr>
-        `;
+    const { school, deliveries } = deliveriesBySchool[schoolId];
+    const totalQuantity = deliveries.reduce(
+      (sum, d) => sum + d.line.quantity,
+      0
+    );
+
+    // Pengiriman MBG Document
+    html += generateDeliveryDocument(
+      "Pengiriman MBG",
+      school,
+      deliveries[0].shipment.departure_time,
+      totalQuantity
+    );
+
+    // Pengambilan MBG Document
+    html += generateDeliveryDocument(
+      "Pengambilan MBG",
+      school,
+      deliveries[0].shipment.departure_time,
+      totalQuantity
+    );
   }
 
-  const totalPortions = Object.values(deliveriesBySchool).reduce(
-    (sum, d) => sum + d.qty,
-    0
-  );
-  html += `   </tbody>
-                <tfoot class="font-semibold bg-gray-50">
-                    <tr>
-                        <td class="px-6 py-3 text-right" colspan="2">Total Porsi Terdistribusi</td>
-                        <td class="px-6 py-3 text-right">${totalPortions.toLocaleString(
-                          "id-ID"
-                        )}</td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>`;
-
+  html += `</div>`;
   contentEl.innerHTML = html;
+}
+
+function generateDeliveryDocument(type, school, departureTime, quantity) {
+  const date = new Date(departureTime);
+  const formattedDate = formatDate(date.toISOString().split("T")[0]);
+  const formattedTime = date.toTimeString().substring(0, 5);
+
+  return `
+    <div class="document-container mb-8 page-break">
+      <div class="border-2 border-black p-6">
+        <h3 class="text-center text-lg font-bold mb-2">BERITA ACARA PENGERIMAAN PAKET MAKANAN</h3>
+        <h3 class="text-center text-lg font-bold mb-4">PROGRAM MAKAN BERGIZI</h3>
+        
+        <div class="flex justify-between mb-6">
+          <div class="w-1/2">
+            <h4 class="text-center font-semibold border-b-2 border-black pb-1">${type}</h4>
+          </div>
+          <div class="w-1/2">
+            <div class="flex justify-between">
+              <span>Tanggal:</span>
+              <span>${formattedDate}</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Waktu:</span>
+              <span>${formattedTime}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mb-6">
+          <div class="flex justify-between mb-2">
+            <span>Jumlah Paket Makanan:</span>
+            <span class="font-semibold">${quantity.toLocaleString(
+              "id-ID"
+            )}</span>
+          </div>
+          <div class="flex justify-between mb-2">
+            <span>Dikirim dari:</span>
+            <span>${Data.mockProfilSPPG.nama}</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Diterima oleh:</span>
+            <span>${school.contact_person || school.name}</span>
+          </div>
+        </div>
+        
+        <div class="flex justify-between mt-8">
+          <div class="text-center w-1/2">
+            <p>Dikirim oleh,</p>
+            <div class="h-16 border-b border-black my-2"></div>
+            <p>${Data.mockProfilSPPG.nama}</p>
+          </div>
+          <div class="text-center w-1/2">
+            <p>Diterima oleh,</p>
+            <div class="h-16 border-b border-black my-2"></div>
+            <p>${school.contact_person || school.name}</p>
+          </div>
+        </div>
+        
+        <div class="mt-6 text-right">
+          <p>Hubungi: ${Data.mockProfilSPPG.telepon || "-"}</p>
+        </div>
+        
+        <div class="mt-4 text-center text-gray-500">
+          <p>(Stempel)</p>
+        </div>
+      </div>
+    </div>
+  `;
 }

@@ -1,5 +1,3 @@
-// js/handlers/proses_harian.js
-
 import * as Data from "../data.js";
 import * as UI from "../ui.js";
 import {
@@ -14,7 +12,6 @@ import {
 // ===================================================================================
 // BAGIAN A: PENGADAAN & PENERIMAAN
 // ===================================================================================
-
 export function setupPengadaanPage() {
   renderPOTable();
   document
@@ -40,7 +37,6 @@ function renderPOTable() {
           .includes(search)) &&
       (status === "all" || po.status === status)
   );
-
   const tableBody = document.getElementById("poTableBody");
   tableBody.innerHTML = filteredPOs
     .map((po) => {
@@ -95,7 +91,7 @@ function addPOItemLine(item = {}) {
   if (item.item_id) newLine.querySelector(".item-select").value = item.item_id;
 }
 
-window.updatePOTotalAmount = function () {
+export function updatePOTotalAmount() {
   let total = 0;
   document.querySelectorAll("#itemLines .item-line").forEach((line) => {
     const item = Data.mockItems.find(
@@ -105,7 +101,7 @@ window.updatePOTotalAmount = function () {
     if (item && quantity > 0) total += item.price * quantity;
   });
   document.getElementById("totalAmount").textContent = formatCurrency(total);
-};
+}
 
 export function openPOModal(poId = null) {
   const form = document.getElementById("poForm");
@@ -159,14 +155,12 @@ function handlePOSubmit(e) {
     showToast("Harap tambahkan minimal satu item.", "error");
     return;
   }
-
   const poData = {
     supplier_id: parseInt(document.getElementById("supplier").value),
     order_date: document.getElementById("orderDate").value,
     items: items,
     total_amount: totalAmount,
   };
-
   if (poId) {
     const poIndex = Data.purchaseOrders.findIndex((p) => p.id == poId);
     if (poIndex > -1) {
@@ -242,7 +236,6 @@ function handleReceiptSubmit(e) {
   const poId = parseInt(document.getElementById("receiptPoId").value);
   const po = Data.purchaseOrders.find((p) => p.id === poId);
   if (!po) return;
-
   const receiptDate = formatInputDate(new Date());
   let itemsReceived = 0;
   document.querySelectorAll(".receipt-item-row").forEach((row) => {
@@ -271,7 +264,6 @@ function handleReceiptSubmit(e) {
       Data.inventoryLots.push(newLot);
     }
   });
-
   if (itemsReceived === 0) {
     showToast("Tidak ada item yang diterima.", "error");
     return;
@@ -279,7 +271,6 @@ function handleReceiptSubmit(e) {
   po.status = po.items.every((i) => (i.received_qty || 0) >= i.quantity)
     ? "Diterima Penuh"
     : "Diterima Sebagian";
-
   Data.saveToLocalStorage("sppg_inventoryLots", Data.inventoryLots);
   Data.saveToLocalStorage("sppg_purchaseOrders", Data.purchaseOrders);
   showToast("Penerimaan barang berhasil disimpan.", "success");
@@ -290,11 +281,9 @@ function handleReceiptSubmit(e) {
 // ===================================================================================
 // BAGIAN B: PRODUKSI & STOK (TERMASUK MASTER ITEM)
 // ===================================================================================
-
 export function setupProduksiStokPage() {
   const content = document.getElementById("production-content");
   const tabs = document.querySelectorAll("#production-tabs .tab-button");
-
   const renderTabContent = (tabId) => {
     tabs.forEach((t) => {
       t.classList.remove("tab-active", "border-blue-600", "text-blue-600");
@@ -302,7 +291,6 @@ export function setupProduksiStokPage() {
     });
     const activeTab = document.querySelector(`[data-tab="${tabId}"]`);
     activeTab.classList.add("tab-active", "border-blue-600", "text-blue-600");
-
     if (tabId === "stok") {
       content.innerHTML = UI.stokTabContent;
       document
@@ -553,73 +541,127 @@ function handleItemFormSubmit(e) {
 // ===================================================================================
 // BAGIAN C: DISTRIBUSI
 // ===================================================================================
-
 export function setupDistribusiPage() {
   const today = new Date();
-  document.getElementById("distribusiStartDate").value = formatInputDate(today);
-  document.getElementById("distribusiEndDate").value = formatInputDate(today);
-  document
-    .getElementById("distribusiStartDate")
-    .addEventListener("change", renderShipmentList);
-  document
-    .getElementById("distribusiEndDate")
-    .addEventListener("change", renderShipmentList);
+  const startDateInput = document.getElementById("distribusiStartDate");
+  const endDateInput = document.getElementById("distribusiEndDate");
+
+  if (startDateInput) {
+    startDateInput.value = formatInputDate(today);
+    startDateInput.addEventListener("change", renderShipmentList);
+  } else {
+    console.error("Element with ID 'distribusiStartDate' not found");
+  }
+
+  if (endDateInput) {
+    endDateInput.value = formatInputDate(today);
+    endDateInput.addEventListener("change", renderShipmentList);
+  } else {
+    console.error("Element with ID 'distribusiEndDate' not found");
+  }
+
   renderShipmentList();
 }
 
 function renderShipmentList() {
   const startDate = document.getElementById("distribusiStartDate").value;
   const endDate = document.getElementById("distribusiEndDate").value;
+
+  if (!startDate || !endDate) {
+    console.error("Start date or end date is missing");
+    return;
+  }
+
   const filtered = Data.shipments.filter((s) => {
     const departureDate = s.departure_time
       ? s.departure_time.split("T")[0]
-      : s.departure_time;
+      : null;
     return (
       departureDate && departureDate >= startDate && departureDate <= endDate
     );
   });
-  document.getElementById("shipmentList").innerHTML = filtered
+
+  const listContainer = document.getElementById("shipmentList");
+  if (!listContainer) {
+    console.error("Element with ID 'shipmentList' not found");
+    return;
+  }
+
+  if (filtered.length === 0) {
+    listContainer.innerHTML = `<div class="text-center py-10 text-gray-500">Tidak ada jadwal pengiriman pada rentang tanggal ini.</div>`;
+    return;
+  }
+
+  listContainer.innerHTML = filtered
     .map((s) => {
       const driver = Data.mockDrivers.find((d) => d.id === s.driver_id);
-      return `<div class="bg-white border rounded-lg p-4 shadow-sm"><div class="flex justify-between items-start"><div><p class="font-semibold">${
+      return `<div class="bg-white border rounded-lg p-4 shadow-sm">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="font-semibold">${s.shipment_number}</p>
+                    <p class="text-sm text-gray-500">${
+                      s.departure_time
+                        ? formatDate(s.departure_time)
+                        : "Belum Berangkat"
+                    }</p>
+                </div>
+                ${getStatusBadge(s.status)}
+            </div>
+            <div class="mt-4 flex justify-between items-center">
+                <p class="text-sm">${s.delivery_lines.length} tujuan</p>
+                <div class="space-x-2">
+                    <button onclick="cetakSuratJalan(${
+                      s.id
+                    })" class="text-green-600 hover:underline text-sm">Cetak Surat Jalan</button>
+                    <button onclick="openShipmentModal(${
+                      s.id
+                    })" class="text-blue-600 hover:underline text-sm">Edit</button>
+                    <button onclick="openDeleteModal('distribusi', ${s.id}, '${
         s.shipment_number
-      }</p><p class="text-sm text-gray-500">${formatDate(
-        s.departure_time
-      )}</p></div>${getStatusBadge(
-        s.status
-      )}</div><div class="mt-4 flex justify-between items-center"><p class="text-sm">${
-        s.delivery_lines.length
-      } tujuan</p><div class="space-x-2"><button onclick="cetakSuratJalan(${
-        s.id
-      })" class="text-green-600 hover:underline text-sm">Cetak Surat Jalan</button><button onclick="openShipmentModal(${
-        s.id
-      })" class="text-blue-600 hover:underline text-sm">Edit</button><button onclick="openDeleteModal('distribusi', ${
-        s.id
-      }, '${
-        s.shipment_number
-      }')" class="text-red-600 hover:underline text-sm">Hapus</button></div></div></div>`;
+      }')" class="text-red-600 hover:underline text-sm">Hapus</button>
+                </div>
+            </div>
+        </div>`;
     })
     .join("");
 }
 
 function addDeliveryLine(line = {}) {
   const container = document.getElementById("deliveryLines");
+  if (!container) {
+    console.error("Element with ID 'deliveryLines' not found");
+    return;
+  }
+
   const newLine = document.createElement("div");
   newLine.className = "delivery-line grid grid-cols-12 gap-4 items-center";
-  newLine.innerHTML = `<div class="col-span-7"><select class="school-select bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5">${generateSelectOptions(
-    Data.mockSchools,
-    "id",
-    "name"
-  )}</select></div><div class="col-span-3"><input type="number" min="1" placeholder="Porsi" value="${
-    line.quantity || ""
-  }" class="quantity-input bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5"></div><div class="col-span-2 flex justify-end"><button type="button" class="text-red-500 hover:text-red-700 font-medium" onclick="this.closest('.delivery-line').remove()">Hapus</button></div>`;
+  newLine.innerHTML = `
+        <div class="col-span-7">
+            <select class="school-select bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5">
+                ${generateSelectOptions(Data.mockSchools, "id", "name")}
+            </select>
+        </div>
+        <div class="col-span-3">
+            <input type="number" min="1" placeholder="Porsi" value="${
+              line.quantity || ""
+            }" class="quantity-input bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5">
+        </div>
+        <div class="col-span-2 flex justify-end">
+            <button type="button" class="text-red-500 hover:text-red-700 font-medium" onclick="this.closest('.delivery-line').remove()">Hapus</button>
+        </div>`;
   container.appendChild(newLine);
-  if (line.school_id)
+  if (line.school_id) {
     newLine.querySelector(".school-select").value = line.school_id;
+  }
 }
 
 export function openShipmentModal(id = null) {
   const form = document.getElementById("shipmentForm");
+  if (!form) {
+    console.error("Element with ID 'shipmentForm' not found");
+    return;
+  }
+
   form.reset();
   document.getElementById("shipmentId").value = "";
   document.getElementById("deliveryLines").innerHTML = "";
@@ -638,6 +680,11 @@ export function openShipmentModal(id = null) {
 
   if (id) {
     const shipment = Data.shipments.find((s) => s.id === id);
+    if (!shipment) {
+      console.error(`Shipment with ID ${id} not found`);
+      return;
+    }
+
     document.getElementById(
       "modalTitleShipment"
     ).textContent = `Edit Pengiriman: ${shipment.shipment_number}`;
@@ -653,21 +700,238 @@ export function openShipmentModal(id = null) {
   }
   Alpine.store("modals").shipment = true;
 }
+export function cetakSuratJalan(shipmentId) {
+  const s = Data.shipments.find((sh) => sh.id === shipmentId);
+  if (!s) {
+    console.error(`Shipment with ID ${shipmentId} not found`);
+    return;
+  }
+  const driver = Data.mockDrivers.find((d) => d.id === s.driver_id);
+  const vehicle = Data.mockVehicles.find((v) => v.id === s.vehicle_id);
+  const recipe = Data.mockRecipes.find((r) => r.id === s.recipe_id);
+  if (!driver || !vehicle || !recipe) {
+    console.error("Missing driver, vehicle, or recipe data");
+    return;
+  }
+
+  // Format tanggal dan waktu
+  const departureDate = new Date(s.departure_time);
+  const formattedDate = formatDate(departureDate.toISOString().split("T")[0]);
+  const formattedTime = departureDate.toTimeString().substring(0, 5);
+
+  // Hitung total porsi
+  const totalPortions = s.delivery_lines.reduce(
+    (sum, line) => sum + line.quantity,
+    0
+  );
+
+  // Generate daftar sekolah tujuan
+  const schoolsList = s.delivery_lines
+    .map((line) => {
+      const school = Data.mockSchools.find((sc) => sc.id === line.school_id);
+      if (!school) {
+        console.error(`School with ID ${line.school_id} not found`);
+        return "";
+      }
+      return `<div class="mb-2">
+        <strong>${school.name}</strong><br>
+        <small>${school.address}</small><br>
+        <span>Jumlah: ${line.quantity} Porsi</span>
+      </div>`;
+    })
+    .join("");
+
+  const content = `<html>
+    <head>
+      <title>Surat Jalan - ${s.shipment_number}</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 20px;
+          font-size: 14px;
+        }
+        .document-container {
+          max-width: 800px;
+          margin: 0 auto;
+          border: 2px solid black;
+          padding: 20px;
+        }
+        .header {
+          text-align: center;
+          margin-bottom: 20px;
+        }
+        .header h3 {
+          margin: 5px 0;
+        }
+        .document-details {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 20px;
+        }
+        .document-details .left {
+          width: 50%;
+        }
+        .document-details .right {
+          width: 50%;
+          text-align: right;
+        }
+        .info-row {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 10px;
+        }
+        .schools-list {
+          margin: 20px 0;
+          border: 1px solid #ddd;
+          padding: 10px;
+        }
+        .signatures {
+          margin-top: 40px;
+          display: flex;
+          justify-content: space-between;
+        }
+        .signature-box {
+          width: 30%;
+          text-align: center;
+        }
+        .signature-line {
+          height: 40px;
+          border-bottom: 1px solid black;
+          margin: 10px 0;
+        }
+        .stamp-placeholder {
+          text-align: center;
+          margin-top: 20px;
+          color: #777;
+        }
+        @media print {
+          body {
+            padding: 0;
+          }
+          .document-container {
+            page-break-after: always;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="document-container">
+        <div class="header">
+          <h3>BERITA ACARA PENGERIMAAN PAKET MAKANAN</h3>
+          <h3>PROGRAM MAKAN BERGIZI</h3>
+        </div>
+        
+        <div class="document-details">
+          <div class="left">
+            <h4 style="border-bottom: 2px solid black; padding-bottom: 5px; display: inline-block;">Pengiriman MBG</h4>
+          </div>
+          <div class="right">
+            <div class="info-row">
+              <span>Tanggal:</span>
+              <span>${formattedDate}</span>
+            </div>
+            <div class="info-row">
+              <span>Waktu:</span>
+              <span>${formattedTime}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="info-section">
+          <div class="info-row">
+            <span>No. Surat Jalan:</span>
+            <span>${s.shipment_number}</span>
+          </div>
+          <div class="info-row">
+            <span>Jumlah Paket Makanan:</span>
+            <span>${totalPortions.toLocaleString("id-ID")} Porsi</span>
+          </div>
+          <div class="info-row">
+            <span>Menu yang Dikirim:</span>
+            <span>${recipe.name}</span>
+          </div>
+          <div class="info-row">
+            <span>Dikirim dari:</span>
+            <span>${Data.mockProfilSPPG.nama}</span>
+          </div>
+          <div class="info-row">
+            <span>Driver:</span>
+            <span>${driver.name}</span>
+          </div>
+          <div class="info-row">
+            <span>Kendaraan:</span>
+            <span>${vehicle.plate_number}</span>
+          </div>
+        </div>
+        
+        <div class="schools-list">
+          <h4 style="margin-top: 0;">Daftar Sekolah Tujuan:</h4>
+          ${schoolsList}
+        </div>
+        
+        <div class="signatures">
+          <div class="signature-box">
+            <p>Dikirim oleh,</p>
+            <div class="signature-line"></div>
+            <p>${driver.name}</p>
+            <p>Driver</p>
+          </div>
+          <div class="signature-box">
+            <p>Diterima oleh,</p>
+            <div class="signature-line"></div>
+            <p>(___________________)</p>
+            <p>Penerima</p>
+          </div>
+          <div class="signature-box">
+            <p>Mengetahui,</p>
+            <div class="signature-line"></div>
+            <p>(___________________)</p>
+            <p>Manajer SPPG</p>
+          </div>
+        </div>
+        
+        <div class="stamp-placeholder">
+          <p>(Stempel)</p>
+        </div>
+        
+        <div class="mt-4 text-right">
+          <p>Hubungi: ${Data.mockProfilSPPG.telepon || "-"}</p>
+        </div>
+      </div>
+    </body>
+  </html>`;
+
+  const printWindow = window.open("", "_blank");
+  printWindow.document.write(content);
+  printWindow.document.close();
+  printWindow.focus();
+}
 
 function handleShipmentSubmit(e) {
   e.preventDefault();
   const id = document.getElementById("shipmentId").value;
   const delivery_lines = [];
+
   document.querySelectorAll(".delivery-line").forEach((line) => {
-    const school_id = parseInt(line.querySelector(".school-select").value);
-    const quantity = parseInt(line.querySelector(".quantity-input").value);
-    if (school_id && quantity > 0)
+    const schoolSelect = line.querySelector(".school-select");
+    const quantityInput = line.querySelector(".quantity-input");
+
+    if (!schoolSelect || !quantityInput) return;
+
+    const school_id = parseInt(schoolSelect.value);
+    const quantity = parseInt(quantityInput.value);
+
+    if (school_id && quantity > 0) {
       delivery_lines.push({ school_id, quantity, status: "Pending" });
+    }
   });
+
   if (delivery_lines.length === 0) {
     showToast("Harap tambahkan minimal satu tujuan pengiriman.", "error");
     return;
   }
+
   const shipmentData = {
     driver_id: parseInt(document.getElementById("shipmentDriverId").value),
     vehicle_id: parseInt(document.getElementById("shipmentVehicleId").value),
@@ -677,14 +941,16 @@ function handleShipmentSubmit(e) {
 
   if (id) {
     const index = Data.shipments.findIndex((s) => s.id == id);
-    Data.shipments[index] = { ...Data.shipments[index], ...shipmentData };
-    showToast("Jadwal pengiriman berhasil diperbarui.", "success");
+    if (index !== -1) {
+      Data.shipments[index] = { ...Data.shipments[index], ...shipmentData };
+      showToast("Jadwal pengiriman berhasil diperbarui.");
+    }
   } else {
     const newId =
       Data.shipments.length > 0
         ? Math.max(...Data.shipments.map((s) => s.id)) + 1
         : 601;
-    const dateStr = formatInputDate(new Date()).replace(/-/g, "");
+    const dateStr = new Date().toISOString().split("T")[0].replace(/-/g, "");
     const shipmentCountForDate =
       Data.shipments.filter((s) => s.shipment_number.includes(dateStr)).length +
       1;
@@ -695,51 +961,16 @@ function handleShipmentSubmit(e) {
         2,
         "0"
       )}`,
-      departure_time: null,
+      departure_time: new Date().toISOString(),
       status: "Direncanakan",
     };
     Data.shipments.push(newShipment);
-    showToast("Jadwal pengiriman berhasil dibuat.", "success");
+    showToast("Jadwal pengiriman berhasil dibuat.");
   }
+
   Data.saveToLocalStorage("sppg_shipments", Data.shipments);
   Alpine.store("modals").shipment = false;
   renderShipmentList();
-}
-
-export function cetakSuratJalan(shipmentId) {
-  const s = Data.shipments.find((sh) => sh.id === shipmentId);
-  if (!s) return;
-  const driver = Data.mockDrivers.find((d) => d.id === s.driver_id);
-  const vehicle = Data.mockVehicles.find((v) => v.id === s.vehicle_id);
-  const recipe = Data.mockRecipes.find((r) => r.id === s.recipe_id);
-
-  const deliveryListHtml = s.delivery_lines
-    .map((l) => {
-      const school = Data.mockSchools.find((sc) => sc.id === l.school_id);
-      return `<tr><td style="border: 1px solid #ddd; padding: 8px;">${school.name}<br><small>${school.address}</small></td><td style="border: 1px solid #ddd; padding: 8px; text-align: right;">${l.quantity} Porsi</td></tr>`;
-    })
-    .join("");
-  const content = `<html><head><title>Surat Jalan - ${
-    s.shipment_number
-  }</title><style>body{font-family: sans-serif; margin: 2em;} table{width: 100%; border-collapse: collapse;} h1,h2,h3,p{margin: 0 0 0.5em 0;} .header{text-align: center; margin-bottom: 2em; border-bottom: 2px solid black; padding-bottom: 1em;} .details-grid{display: grid; grid-template-columns: 1fr 1fr; gap: 1em; margin-bottom: 2em;} .signatures{margin-top: 4em; display: grid; grid-template-columns: 1fr 1fr 1fr; text-align: center; page-break-inside: avoid;}</style></head><body><div class="header"><h1>SURAT JALAN</h1><p>${
-    Data.mockProfilSPPG.nama
-  }</p><p>${Data.mockProfilSPPG.alamat}</p></div><h3>No: ${
-    s.shipment_number
-  }</h3><p>Tanggal: ${formatDate(
-    s.departure_time
-  )}</p><div class="details-grid"><div><p><strong>Driver:</strong> ${
-    driver.name
-  }</p><p><strong>Kendaraan:</strong> ${
-    vehicle.plate_number
-  }</p></div><div><p><strong>Menu yang Dikirim:</strong> ${
-    recipe.name
-  }</p></div></div><h3>Rincian Pengiriman:</h3><table><thead><tr><th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Tujuan</th><th style="border: 1px solid #ddd; padding: 8px; text-align: right;">Jumlah</th></tr></thead><tbody>${deliveryListHtml}</tbody></table><div class="signatures"><div><p>Disiapkan Oleh,</p><br><br><br><p>(___________________)</p><p>Bagian Dapur</p></div><div><p>Dikirim Oleh,</p><br><br><br><p>( ${
-    driver.name
-  } )</p><p>Driver</p></div><div><p>Mengetahui,</p><br><br><br><p>(___________________)</p><p>Manajer SPPG</p></div></div></body></html>`;
-  const printWindow = window.open("", "_blank");
-  printWindow.document.write(content);
-  printWindow.document.close();
-  printWindow.focus();
 }
 
 export const formHandlers = {

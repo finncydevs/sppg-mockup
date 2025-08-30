@@ -128,7 +128,6 @@ window.openDeleteModal = function (type, id, name) {
 
 // Jadikan semua fungsi "openModal" global agar bisa dipanggil dari `onclick` di HTML
 Object.assign(window, {
-  // Perencanaan
   openRecipeModal: Perencanaan.openRecipeModal,
   openRecipeDetailModal: Perencanaan.openRecipeDetailModal,
   openSiklusMenuModal: Perencanaan.openSiklusMenuModal,
@@ -227,13 +226,13 @@ const pageMap = {
   },
   profil_yayasan: {
     title: "Profil Yayasan",
-    template: UI.profilYayasanTemplate,
-    setup: Administrasi.setupProfilYayasanPage,
+    template: UI.masterContentTemplate, // CHANGED: Use the new generic container
+    setup: MasterData.setupProfilYayasanPage, // CHANGED: Point to the function in MasterData
   },
   profil_sppg: {
     title: "Profil SPPG",
-    template: UI.profilSppgTemplate,
-    setup: Administrasi.setupProfilSppgPage,
+    template: UI.masterContentTemplate, // CHANGED: Use the new generic container
+    setup: MasterData.setupProfilSppgPage, // CHANGED: Point to the function in MasterData
   },
 };
 

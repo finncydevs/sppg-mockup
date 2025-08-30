@@ -13,30 +13,34 @@ export const siklusMenuTabContent = `
 <div class="flex flex-col md:flex-row justify-between items-center mb-4">
     <div class="flex items-center gap-4">
         <button id="prevMonthBtn" class="p-2 rounded-full hover:bg-gray-200">
-            <svg class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+            <svg class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
         </button>
         <h3 class="text-xl font-semibold w-48 text-center" id="monthYearDisplay"></h3>
         <button id="nextMonthBtn" class="p-2 rounded-full hover:bg-gray-200">
-            <svg class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+            <svg class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
         </button>
     </div>
     <button id="saveSiklusButton" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-semibold text-sm mt-4 md:mt-0">Simpan Jadwal</button>
 </div>
 <div class="grid grid-cols-7 gap-px mt-4 bg-gray-200 border border-gray-200 rounded-lg overflow-hidden">
-    <div class="text-center font-semibold text-sm py-2 bg-gray-50">Min</div>
-    <div class="text-center font-semibold text-sm py-2 bg-gray-50">Sen</div>
-    <div class="text-center font-semibold text-sm py-2 bg-gray-50">Sel</div>
-    <div class="text-center font-semibold text-sm py-2 bg-gray-50">Rab</div>
-    <div class="text-center font-semibold text-sm py-2 bg-gray-50">Kam</div>
-    <div class="text-center font-semibold text-sm py-2 bg-gray-50">Jum</div>
-    <div class="text-center font-semibold text-sm py-2 bg-gray-50">Sab</div>
+    <div class="text-center font-semibold text-sm py-2 bg-gray-50 text-gray-600">Min</div>
+    <div class="text-center font-semibold text-sm py-2 bg-gray-50 text-gray-600">Sen</div>
+    <div class="text-center font-semibold text-sm py-2 bg-gray-50 text-gray-600">Sel</div>
+    <div class="text-center font-semibold text-sm py-2 bg-gray-50 text-gray-600">Rab</div>
+    <div class="text-center font-semibold text-sm py-2 bg-gray-50 text-gray-600">Kam</div>
+    <div class="text-center font-semibold text-sm py-2 bg-gray-50 text-gray-600">Jum</div>
+    <div class="text-center font-semibold text-sm py-2 bg-gray-50 text-gray-600">Sab</div>
 </div>
-<div id="siklusMenuGrid" class="grid grid-cols-7 gap-px bg-gray-200">
-    </div>`;
+<div id="siklusMenuGrid" class="grid grid-cols-7 gap-px bg-gray-200 border-l border-r border-b border-gray-200 rounded-b-lg">
+</div>`;
+
 
 // --- Standalone Page Templates ---
 export const pengadaanPageTemplate = `<div class="bg-white p-6 rounded-lg shadow-md"><div class="flex flex-col md:flex-row justify-between items-center mb-4 gap-4"><div class="w-full md:w-1/3"><input type="text" id="searchInputPO" placeholder="Cari No. PO atau Supplier..." class="w-full px-4 py-2 border rounded-lg"></div><div class="flex items-center gap-2 w-full md:w-auto"><select id="statusFilterPO" class="px-4 py-2 border rounded-lg"><option value="all">Semua Status</option><option value="Draft">Draft</option><option value="Disetujui">Disetujui</option><option value="Diterima Sebagian">Diterima Sebagian</option><option value="Diterima Penuh">Diterima Penuh</option></select><button id="createPOButton" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-semibold flex items-center whitespace-nowrap"><svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>Buat PO</button></div></div><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs text-gray-700 uppercase bg-gray-100"><tr><th class="px-6 py-3">No. PO</th><th class="px-6 py-3">Supplier</th><th class="px-6 py-3">Tgl Pesan</th><th class="px-6 py-3 text-right">Total</th><th class="px-6 py-3 text-center">Status</th><th class="px-6 py-3 text-center">Aksi</th></tr></thead><tbody id="poTableBody"></tbody></table></div></div>`;
-export const distribusiPageTemplate = `<div class="bg-white p-6 rounded-lg shadow-md"><div class="flex flex-col md:flex-row justify-between items-center mb-4 gap-4"><h3 class="text-lg font-semibold">Jadwal Pengiriman</h3><div class="flex items-center gap-2"><label class="text-sm">Dari:</label><input type="date" id="distribusiStartDate" class="border rounded-lg p-2 text-sm"><label class="text-sm">Sampai:</label><input type="date" id="distribusiEndDate" class="border rounded-lg p-2 text-sm"><button onclick="openShipmentModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-semibold text-sm flex items-center"><svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>Buat</button></div></div><div id="shipmentList" class="space-y-4"></div></div>`;
 export const keuanganPageTemplate = `<div class="grid grid-cols-1 lg:grid-cols-3 gap-6"><div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md"><div class="flex justify-between items-center mb-4"><h3 class="text-lg font-semibold">Riwayat Transaksi</h3><button onclick="openKeuanganModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-semibold text-sm">Tambah Transaksi</button></div><div class="overflow-y-auto max-h-96"><table class="w-full text-sm"><thead class="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0"><tr><th class="px-6 py-3">Tanggal</th><th class="px-6 py-3">Deskripsi</th><th class="px-6 py-3 text-right">Pemasukan</th><th class="px-6 py-3 text-right">Pengeluaran</th></tr></thead><tbody id="finance-transactions-table"></tbody></table></div></div><div class="bg-white p-6 rounded-lg shadow-md self-start"><h3 class="text-lg font-semibold mb-4">Ringkasan Keuangan</h3><div class="space-y-4"><div class="flex justify-between"><span class="text-gray-600">Total Pemasukan:</span><span id="total-pemasukan" class="font-semibold text-green-600"></span></div><div class="flex justify-between"><span class="text-gray-600">Total Pengeluaran:</span><span id="total-pengeluaran" class="font-semibold text-red-600"></span></div><hr><div class="flex justify-between text-lg"><span class="font-bold">Saldo Akhir:</span><span id="saldo-akhir" class="font-bold"></span></div></div></div></div>`;
 export const pelaporanPageTemplate = `<div><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6"><div class="bg-white p-5 rounded-lg shadow"><h4 class="text-sm font-medium text-gray-500">Porsi Terdistribusi</h4><p class="text-3xl font-bold mt-1" id="kpi-total-porsi">0</p><p class="text-xs text-gray-500 mt-1">hari ini</p></div><div class="bg-white p-5 rounded-lg shadow"><h4 class="text-sm font-medium text-gray-500">Kehadiran Karyawan</h4><p class="text-3xl font-bold mt-1" id="kpi-attendance-rate">0%</p><p class="text-xs text-gray-500 mt-1" id="kpi-attendance-detail">0 dari 0 karyawan</p></div><div class="bg-white p-5 rounded-lg shadow"><h4 class="text-sm font-medium text-gray-500">Total Pengadaan</h4><p class="text-3xl font-bold mt-1" id="kpi-total-procurement">Rp 0</p><p class="text-xs text-gray-500 mt-1">bulan ini</p></div><div class="bg-white p-5 rounded-lg shadow"><h4 class="text-sm font-medium text-gray-500">Total Pengeluaran</h4><p class="text-3xl font-bold mt-1" id="kpi-total-expense">Rp 0</p><p class="text-xs text-gray-500 mt-1">bulan ini</p></div></div></div>`;
 export const laporanPengantaranTemplate = `<div class="bg-white p-6 rounded-lg shadow-md"><div class="flex justify-between items-center mb-4 no-print"><h3 class="text-lg font-semibold">Laporan Pengantaran</h3><div class="flex items-center gap-2"><label class="text-sm">Tanggal:</label><input type="date" id="laporan-tanggal" class="border rounded-lg p-2 text-sm"><button id="printLaporanBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm">Cetak Laporan</button></div></div><div id="laporan-content" class="space-y-4"></div></div>`;
@@ -47,9 +51,57 @@ export const absensiContentTemplate = `<div class="bg-white p-6 rounded-lg shado
 export const masterSuppliersTemplate = `<div class="bg-white p-6 rounded-lg shadow-md"><div class="flex justify-between items-center mb-4"><h3 class="text-lg font-semibold">Master Data Supplier</h3><button onclick="openSupplierModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-semibold text-sm flex items-center">Tambah Supplier</button></div><div class="overflow-x-auto"><table class="w-full text-sm"><thead class="text-xs text-gray-700 uppercase bg-gray-100"><tr><th class="px-6 py-3">Nama Perusahaan</th><th class="px-6 py-3">Kontak Person</th><th class="px-6 py-3">Telepon</th><th class="px-6 py-3 text-center">Aksi</th></tr></thead><tbody id="master-suppliers-table"></tbody></table></div></div>`;
 export const masterSchoolsTemplate = `<div class="bg-white p-6 rounded-lg shadow-md"><div class="flex justify-between items-center mb-4"><h3 class="text-lg font-semibold">Master Data Sekolah</h3><button onclick="openSchoolModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-semibold text-sm flex items-center">Tambah Sekolah</button></div><div class="overflow-x-auto"><table class="w-full text-sm"><thead class="text-xs text-gray-700 uppercase bg-gray-100"><tr><th class="px-6 py-3">Nama Sekolah</th><th class="px-6 py-3">Kepala Sekolah</th><th class="px-6 py-3">Telepon</th><th class="px-6 py-3 text-center">Aksi</th></tr></thead><tbody id="master-schools-table"></tbody></table></div></div>`;
 export const masterUsersTemplate = `<div class="bg-white p-6 rounded-lg shadow-md"><div class="flex justify-between items-center mb-4"><h3 class="text-lg font-semibold">Master Data Pengguna</h3><button onclick="openUserModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-semibold text-sm flex items-center">Tambah Pengguna</button></div><div class="overflow-x-auto"><table class="w-full text-sm"><thead class="text-xs text-gray-700 uppercase bg-gray-100"><tr><th class="px-6 py-3">Nama</th><th class="px-6 py-3">Peran</th><th class="px-6 py-3 text-center">Aksi</th></tr></thead><tbody id="master-users-table"></tbody></table></div></div>`;
-export const profilYayasanTemplate = `<div class="bg-white p-6 rounded-lg shadow-md max-w-2xl mx-auto"><div class="flex justify-between items-center mb-4"><h3 class="text-lg font-semibold">Profil Yayasan</h3><button class="bg-gray-300 text-gray-600 px-4 py-2 rounded-lg text-sm cursor-not-allowed">Edit (Coming Soon)</button></div><div class="space-y-4"><div><label class="text-sm font-medium text-gray-500">Nama Yayasan</label><p id="yayasan-nama" class="text-gray-800 font-semibold"></p></div></div></div>`;
-export const profilSppgTemplate = `<div class="bg-white p-6 rounded-lg shadow-md max-w-2xl mx-auto"><div class="flex justify-between items-center mb-4"><h3 class="text-lg font-semibold">Profil SPPG</h3><button class="bg-gray-300 text-gray-600 px-4 py-2 rounded-lg text-sm cursor-not-allowed">Edit (Coming Soon)</button></div><div class="space-y-4"><div><label class="text-sm font-medium text-gray-500">Nama SPPG</label><p id="sppg-nama" class="text-gray-800 font-semibold"></p></div></div></div>`;
-
+export const distribusiPageTemplate = `<div class="bg-white p-6 rounded-lg shadow-md">
+    <div class="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
+        <h3 class="text-lg font-semibold">Jadwal Pengiriman</h3>
+        <div class="flex items-center gap-2">
+            <label class="text-sm">Dari:</label>
+            <input type="date" id="distribusiStartDate" class="border rounded-lg p-2 text-sm">
+            <label class="text-sm">Sampai:</label>
+            <input type="date" id="distribusiEndDate" class="border rounded-lg p-2 text-sm">
+            <button onclick="openShipmentModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-semibold text-sm flex items-center">
+                <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                Buat
+            </button>
+        </div>
+    </div>
+    <div id="shipmentList" class="space-y-4"></div>
+</div>`;
+export const masterContentTemplate = `<div id="master-content" class="p-4 md:p-6"></div>`;
+export const kalenderPageTemplate = `
+<div class="bg-white p-6 rounded-lg shadow-md">
+  <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+    <h3 class="text-xl font-semibold">Kalender Menu</h3>
+    <div class="flex items-center gap-4">
+      <button id="prevMonth" class="p-2 rounded-full hover:bg-gray-100">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+      </button>
+      <h4 id="currentMonth" class="text-lg font-medium"></h4>
+      <button id="nextMonth" class="p-2 rounded-full hover:bg-gray-100">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+      </button>
+      <button id="saveMenuCalendar" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 font-semibold text-sm">
+        Simpan
+      </button>
+    </div>
+  </div>
+  
+  <div class="grid grid-cols-7 gap-0 border border-gray-200 rounded-lg overflow-hidden">
+    <div class="bg-gray-100 p-2 text-center font-semibold">Min</div>
+    <div class="bg-gray-100 p-2 text-center font-semibold">Sen</div>
+    <div class="bg-gray-100 p-2 text-center font-semibold">Sel</div>
+    <div class="bg-gray-100 p-2 text-center font-semibold">Rab</div>
+    <div class="bg-gray-100 p-2 text-center font-semibold">Kam</div>
+    <div class="bg-gray-100 p-2 text-center font-semibold">Jum</div>
+    <div class="bg-gray-100 p-2 text-center font-semibold">Sab</div>
+    <div id="calendarBody" class="col-span-7 grid grid-cols-7"></div>
+  </div>
+</div>
+`;
 export const modalsTemplate = `
     <div x-show="$store.modals.po" @keydown.escape.window="$store.modals.po = false" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" style="display: none;" x-transition><div @click.outside="$store.modals.po = false" class="modal-content bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-full overflow-y-auto transform"><form id="poForm"><input type="hidden" id="poId"><div class="p-6 border-b"><h3 class="text-xl font-semibold" id="modalTitlePO"></h3></div><div class="p-6 space-y-6"><div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div><label for="supplier" class="block mb-2 text-sm font-medium">Supplier</label><select id="supplier" class="bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5" required></select></div><div><label for="orderDate" class="block mb-2 text-sm font-medium">Tanggal Pesan</label><input type="date" id="orderDate" class="bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5" required></div></div><h4 class="text-lg font-semibold border-t pt-4">Item Pesanan</h4><div id="itemLines" class="space-y-4"></div><button type="button" id="addItemButton" class="text-blue-600 hover:text-blue-800 font-semibold text-sm flex items-center"><svg class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Tambah Item</button><div class="border-t pt-4 flex justify-end"><div class="text-right"><span class="text-sm text-gray-500">Total</span><p id="totalAmount" class="text-2xl font-bold">Rp 0</p></div></div></div><div class="flex items-center justify-end p-6 bg-gray-50 rounded-b-lg"><button type="button" @click="$store.modals.po = false" class="text-gray-500 bg-white hover:bg-gray-100 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 mr-3">Batal</button><button type="submit" class="text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Simpan</button></div></form></div></div>
     <div x-show="$store.modals.receipt" @keydown.escape.window="$store.modals.receipt = false" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" style="display: none;" x-transition><div @click.outside="$store.modals.receipt = false" class="modal-content bg-white rounded-lg shadow-xl w-full max-w-5xl max-h-full overflow-y-auto transform"><form id="receiptForm"><input type="hidden" id="receiptPoId"><div class="p-6 border-b"><h3 class="text-xl font-semibold" id="receiptModalTitle"></h3></div><div class="p-6"><div class="overflow-x-auto"><table class="w-full text-sm"><thead class="text-xs text-gray-700 uppercase bg-gray-100"><tr><th class="px-4 py-3">Item</th><th class="px-4 py-3 text-center">Dipesan</th><th class="px-4 py-3 text-center">Diterima Sblmnya</th><th class="px-4 py-3">Jml Diterima</th><th class="px-4 py-3">No. Lot</th><th class="px-4 py-3">Tgl. Kedaluwarsa</th></tr></thead><tbody id="receiptItemLines"></tbody></table></div></div><div class="flex items-center justify-end p-6 bg-gray-50 rounded-b-lg"><button type="button" @click="$store.modals.receipt = false" class="text-gray-500 bg-white hover:bg-gray-100 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 mr-3">Batal</button><button type="submit" class="text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5">Simpan Penerimaan</button></div></form></div></div>

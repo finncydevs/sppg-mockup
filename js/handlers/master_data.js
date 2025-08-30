@@ -348,3 +348,153 @@ export const deleteHandlers = {
     }
   },
 };
+/**
+ * Renders the profile view (read-only mode).
+ * @param {string} type - 'yayasan' or 'sppg'.
+ */
+function renderProfilView(type) {
+  const contentEl = document.getElementById("master-content"); // Assumes this is your main content container
+  const isYayasan = type === "yayasan";
+  const data = isYayasan ? Data.mockProfilYayasan : Data.mockProfilSPPG;
+  const title = isYayasan ? "Profil Yayasan" : "Profil SPPG";
+  const fields = isYayasan
+    ? {
+        "Nama Yayasan": data.nama,
+        Alamat: data.alamat,
+        Telepon: data.telp,
+        Email: data.email,
+        Pimpinan: data.pimpinan,
+      }
+    : {
+        "Nama SPPG": data.nama,
+        Alamat: data.alamat,
+        Telepon: data.telp,
+        Email: data.email,
+        "Penanggung Jawab": data.penanggung_jawab,
+      };
+
+  let fieldsHtml = "";
+  for (const [label, value] of Object.entries(fields)) {
+    fieldsHtml += `
+      <div>
+        <label class="text-sm font-medium text-gray-500">${label}</label>
+        <p class="text-gray-800 font-semibold mt-1">${value || "-"}</p>
+      </div>`;
+  }
+
+  contentEl.innerHTML = `
+    <div class="bg-white p-6 rounded-lg shadow-md max-w-3xl mx-auto">
+      <div class="flex justify-between items-center mb-6 border-b pb-4">
+        <h3 class="text-xl font-semibold text-gray-800">${title}</h3>
+        <button id="editProfilBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-semibold text-sm">
+            Edit Profil
+        </button>
+      </div>
+      <div class="space-y-4">
+        ${fieldsHtml}
+      </div>
+    </div>`;
+
+  document
+    .getElementById("editProfilBtn")
+    .addEventListener("click", () => renderProfilEdit(type));
+}
+
+/**
+ * Renders the profile edit form.
+ * @param {string} type - 'yayasan' or 'sppg'.
+ */
+function renderProfilEdit(type) {
+  const contentEl = document.getElementById("master-content");
+  const isYayasan = type === "yayasan";
+  const data = isYayasan ? Data.mockProfilYayasan : Data.mockProfilSPPG;
+  const title = isYayasan ? "Profil Yayasan" : "Profil SPPG";
+  const personFieldLabel = isYayasan ? "Pimpinan" : "Penanggung Jawab";
+  const personFieldValue = isYayasan ? data.pimpinan : data.penanggung_jawab;
+
+  contentEl.innerHTML = `
+    <div class="bg-white p-6 rounded-lg shadow-md max-w-3xl mx-auto">
+      <form id="profilForm">
+        <div class="flex justify-between items-center mb-6 border-b pb-4">
+          <h3 class="text-xl font-semibold text-gray-800">Edit ${title}</h3>
+          <div class="space-x-2">
+            <button type="button" id="cancelProfilBtn" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 font-semibold text-sm">
+                Batal
+            </button>
+            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 font-semibold text-sm">
+                Simpan Perubahan
+            </button>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <div>
+              <label for="profil-nama" class="block mb-2 text-sm font-medium text-gray-900">Nama</label>
+              <input type="text" id="profil-nama" value="${data.nama}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+          </div>
+          <div>
+              <label for="profil-alamat" class="block mb-2 text-sm font-medium text-gray-900">Alamat</label>
+              <textarea id="profil-alamat" rows="3" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">${data.alamat}</textarea>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label for="profil-telp" class="block mb-2 text-sm font-medium text-gray-900">Telepon</label>
+                <input type="tel" id="profil-telp" value="${data.telp}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+            </div>
+            <div>
+                <label for="profil-email" class="block mb-2 text-sm font-medium text-gray-900">Email</label>
+                <input type="email" id="profil-email" value="${data.email}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+            </div>
+          </div>
+          <div>
+              <label for="profil-person" class="block mb-2 text-sm font-medium text-gray-900">${personFieldLabel}</label>
+              <input type="text" id="profil-person" value="${personFieldValue}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+          </div>
+        </div>
+      </form>
+    </div>`;
+
+  document
+    .getElementById("cancelProfilBtn")
+    .addEventListener("click", () => renderProfilView(type));
+  document
+    .getElementById("profilForm")
+    .addEventListener("submit", (e) => handleProfilFormSubmit(e, type));
+}
+
+/**
+ * Handles the submission of the profile edit form.
+ * @param {Event} e - The form submission event.
+ * @param {string} type - 'yayasan' or 'sppg'.
+ */
+function handleProfilFormSubmit(e, type) {
+  e.preventDefault();
+  const isYayasan = type === "yayasan";
+
+  if (isYayasan) {
+    Data.mockProfilYayasan.nama = document.getElementById("profil-nama").value;
+    Data.mockProfilYayasan.alamat = document.getElementById("profil-alamat").value;
+    Data.mockProfilYayasan.telp = document.getElementById("profil-telp").value;
+    Data.mockProfilYayasan.email = document.getElementById("profil-email").value;
+    Data.mockProfilYayasan.pimpinan = document.getElementById("profil-person").value;
+    Data.saveToLocalStorage("sppg_profilYayasan", Data.mockProfilYayasan);
+  } else {
+    Data.mockProfilSPPG.nama = document.getElementById("profil-nama").value;
+    Data.mockProfilSPPG.alamat = document.getElementById("profil-alamat").value;
+    Data.mockProfilSPPG.telp = document.getElementById("profil-telp").value;
+    Data.mockProfilSPPG.email = document.getElementById("profil-email").value;
+    Data.mockProfilSPPG.penanggung_jawab = document.getElementById("profil-person").value;
+    Data.saveToLocalStorage("sppg_profilSppg", Data.mockProfilSPPG);
+  }
+
+  showToast("Profil berhasil diperbarui.", "success");
+  renderProfilView(type);
+}
+
+// Setup functions to be called by the main router/app logic
+export function setupProfilYayasanPage() {
+  renderProfilView("yayasan");
+}
+
+export function setupProfilSppgPage() {
+  renderProfilView("sppg");
+}

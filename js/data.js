@@ -186,5 +186,5 @@ export let mockProfilSPPG = loadFromLocalStorage("sppg_profilSppg", {
 export let appState = {
   currentPage: "pelaporan",
   currentUser: { type: "Manajer SPPG", name: "Bapak Kepala" },
-  siklusMenu: { startDate: new Date() },
+  siklusMenu: { currentDate: new Date() },
 };
