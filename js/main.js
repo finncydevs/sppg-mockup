@@ -128,7 +128,6 @@ window.openDeleteModal = function (type, id, name) {
 
 // Jadikan semua fungsi "openModal" global agar bisa dipanggil dari `onclick` di HTML
 Object.assign(window, {
-  // Perencanaan
   openRecipeModal: Perencanaan.openRecipeModal,
   openRecipeDetailModal: Perencanaan.openRecipeDetailModal,
   openSiklusMenuModal: Perencanaan.openSiklusMenuModal,
@@ -139,16 +138,20 @@ Object.assign(window, {
   openWorkOrderModal: ProsesHarian.openWorkOrderModal,
   openShipmentModal: ProsesHarian.openShipmentModal,
   cetakSuratJalan: ProsesHarian.cetakSuratJalan,
+  addIngredientLine: Perencanaan.addIngredientLine,
   // Administrasi
   openKeuanganModal: Administrasi.openKeuanganModal,
   openAsetModal: Administrasi.openAsetModal,
   openGajiModal: Administrasi.openGajiModal,
-  openKaryawanModal: Administrasi.openKaryawanModal, // Note: Karyawan modal is in Administrasi but page is in Master
   // Master Data
   openSupplierModal: MasterData.openSupplierModal,
   openSchoolModal: MasterData.openSchoolModal,
   openUserModal: MasterData.openUserModal,
   openItemModal: MasterData.openItemModal,
+  addPOItemLine: ProsesHarian.addPOItemLine, // <-- TAMBAHKAN INI
+  updatePOTotalAmount: ProsesHarian.updatePOTotalAmount, // <-- TAMBAHKAN INI
+  openKaryawanModal: MasterData.openKaryawanModal,
+  addDeliveryLine: ProsesHarian.addDeliveryLine,
 });
 
 // ===================================================================================
@@ -227,13 +230,13 @@ const pageMap = {
   },
   profil_yayasan: {
     title: "Profil Yayasan",
-    template: UI.profilYayasanTemplate,
-    setup: Administrasi.setupProfilYayasanPage,
+    template: UI.masterContentTemplate, // CHANGED: Use the new generic container
+    setup: MasterData.setupProfilYayasanPage, // CHANGED: Point to the function in MasterData
   },
   profil_sppg: {
     title: "Profil SPPG",
-    template: UI.profilSppgTemplate,
-    setup: Administrasi.setupProfilSppgPage,
+    template: UI.masterContentTemplate, // CHANGED: Use the new generic container
+    setup: MasterData.setupProfilSppgPage, // CHANGED: Point to the function in MasterData
   },
 };
 

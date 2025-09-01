@@ -46,6 +46,69 @@ export function renderKaryawanTable() {
     .join("");
 }
 
+// FUNGSI YANG DIPINDAHKAN & DIPERBAIKI
+export function openKaryawanModal(id = null) {
+  const form = document.getElementById("karyawanForm");
+  form.reset();
+  document.getElementById("karyawanId").value = "";
+
+  if (id) {
+    const karyawan = Data.mockKaryawan.find((k) => k.id === id);
+    document.getElementById("modalTitleKaryawan").textContent = "Edit Karyawan";
+    document.getElementById("karyawanId").value = karyawan.id;
+    document.getElementById("karyawanNama").value = karyawan.nama;
+    document.getElementById("karyawanPosisi").value = karyawan.posisi;
+    document.getElementById("karyawanTglBergabung").value =
+      karyawan.tgl_bergabung;
+    document.getElementById("karyawanStatus").value = karyawan.status;
+  } else {
+    document.getElementById("modalTitleKaryawan").textContent =
+      "Tambah Karyawan Baru";
+    document.getElementById("karyawanTglBergabung").value = formatInputDate(
+      new Date()
+    );
+  }
+  Alpine.store("modals").karyawan = true;
+}
+
+// FUNGSI YANG DIPINDAHKAN & DIPERBAIKI
+function handleKaryawanFormSubmit(e) {
+  e.preventDefault();
+  const id = document.getElementById("karyawanId").value;
+  const karyawanData = {
+    nama: document.getElementById("karyawanNama").value.trim(),
+    posisi: document.getElementById("karyawanPosisi").value.trim(),
+    tgl_bergabung: document.getElementById("karyawanTglBergabung").value,
+    status: document.getElementById("karyawanStatus").value,
+  };
+
+  if (
+    !karyawanData.nama ||
+    !karyawanData.posisi ||
+    !karyawanData.tgl_bergabung
+  ) {
+    showToast("Nama, Posisi, dan Tanggal Bergabung harus diisi.", "error");
+    return;
+  }
+
+  if (id) {
+    const index = Data.mockKaryawan.findIndex((k) => k.id == id);
+    Data.mockKaryawan[index] = { ...Data.mockKaryawan[index], ...karyawanData };
+    showToast("Data karyawan berhasil diperbarui.", "success");
+  } else {
+    const newId =
+      Data.mockKaryawan.length > 0
+        ? Math.max(...Data.mockKaryawan.map((k) => k.id)) + 1
+        : 1;
+    Data.mockKaryawan.push({ id: newId, ...karyawanData });
+    showToast("Karyawan baru berhasil ditambahkan.", "success");
+  }
+
+  Data.saveToLocalStorage("sppg_karyawan", Data.mockKaryawan);
+  Alpine.store("modals").karyawan = false;
+  renderKaryawanTable();
+}
+
 // ===================================================================================
 // BAGIAN B: MASTER SUPPLIER
 // ===================================================================================
@@ -301,15 +364,161 @@ function handleUserFormSubmit(e) {
 }
 
 // ===================================================================================
-// BAGIAN E: EKSPOR HANDLER
+// BAGIAN E: PROFIL YAYASAN & SPPG (DIRAPIKAN)
+// ===================================================================================
+
+function renderProfilView(type) {
+  const contentEl = document.getElementById("master-content");
+  const isYayasan = type === "yayasan";
+  const data = isYayasan ? Data.mockProfilYayasan : Data.mockProfilSPPG;
+  const title = isYayasan ? "Profil Yayasan" : "Profil SPPG";
+  const fields = isYayasan
+    ? {
+        "Nama Yayasan": data.nama,
+        Alamat: data.alamat,
+        Telepon: data.telp,
+        Email: data.email,
+        Pimpinan: data.pimpinan,
+      }
+    : {
+        "Nama SPPG": data.nama,
+        Alamat: data.alamat,
+        Telepon: data.telp,
+        Email: data.email,
+        "Penanggung Jawab": data.penanggung_jawab,
+      };
+
+  let fieldsHtml = "";
+  for (const [label, value] of Object.entries(fields)) {
+    fieldsHtml += `
+      <div>
+        <label class="text-sm font-medium text-gray-500">${label}</label>
+        <p class="text-gray-800 font-semibold mt-1">${value || "-"}</p>
+      </div>`;
+  }
+
+  contentEl.innerHTML = `
+    <div class="bg-white p-6 rounded-lg shadow-md max-w-3xl mx-auto">
+      <div class="flex justify-between items-center mb-6 border-b pb-4">
+        <h3 class="text-xl font-semibold text-gray-800">${title}</h3>
+        <button id="editProfilBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-semibold text-sm">
+            Edit Profil
+        </button>
+      </div>
+      <div class="space-y-4">
+        ${fieldsHtml}
+      </div>
+    </div>`;
+
+  document
+    .getElementById("editProfilBtn")
+    .addEventListener("click", () => renderProfilEdit(type));
+}
+
+function renderProfilEdit(type) {
+  const contentEl = document.getElementById("master-content");
+  const isYayasan = type === "yayasan";
+  const data = isYayasan ? Data.mockProfilYayasan : Data.mockProfilSPPG;
+  const title = isYayasan ? "Profil Yayasan" : "Profil SPPG";
+  const personFieldLabel = isYayasan ? "Pimpinan" : "Penanggung Jawab";
+  const personFieldValue = isYayasan ? data.pimpinan : data.penanggung_jawab;
+
+  contentEl.innerHTML = `
+    <div class="bg-white p-6 rounded-lg shadow-md max-w-3xl mx-auto">
+      <form id="profilForm">
+        <div class="flex justify-between items-center mb-6 border-b pb-4">
+          <h3 class="text-xl font-semibold text-gray-800">Edit ${title}</h3>
+          <div class="space-x-2">
+            <button type="button" id="cancelProfilBtn" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 font-semibold text-sm">
+                Batal
+            </button>
+            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 font-semibold text-sm">
+                Simpan Perubahan
+            </button>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <div>
+              <label for="profil-nama" class="block mb-2 text-sm font-medium text-gray-900">Nama</label>
+              <input type="text" id="profil-nama" value="${data.nama}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+          </div>
+          <div>
+              <label for="profil-alamat" class="block mb-2 text-sm font-medium text-gray-900">Alamat</label>
+              <textarea id="profil-alamat" rows="3" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">${data.alamat}</textarea>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label for="profil-telp" class="block mb-2 text-sm font-medium text-gray-900">Telepon</label>
+                <input type="tel" id="profil-telp" value="${data.telp}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+            </div>
+            <div>
+                <label for="profil-email" class="block mb-2 text-sm font-medium text-gray-900">Email</label>
+                <input type="email" id="profil-email" value="${data.email}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+            </div>
+          </div>
+          <div>
+              <label for="profil-person" class="block mb-2 text-sm font-medium text-gray-900">${personFieldLabel}</label>
+              <input type="text" id="profil-person" value="${personFieldValue}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+          </div>
+        </div>
+      </form>
+    </div>`;
+
+  document
+    .getElementById("cancelProfilBtn")
+    .addEventListener("click", () => renderProfilView(type));
+  document
+    .getElementById("profilForm")
+    .addEventListener("submit", (e) => handleProfilFormSubmit(e, type));
+}
+
+function handleProfilFormSubmit(e, type) {
+  e.preventDefault();
+  const isYayasan = type === "yayasan";
+
+  if (isYayasan) {
+    Data.mockProfilYayasan.nama = document.getElementById("profil-nama").value;
+    Data.mockProfilYayasan.alamat =
+      document.getElementById("profil-alamat").value;
+    Data.mockProfilYayasan.telp = document.getElementById("profil-telp").value;
+    Data.mockProfilYayasan.email =
+      document.getElementById("profil-email").value;
+    Data.mockProfilYayasan.pimpinan =
+      document.getElementById("profil-person").value;
+    Data.saveToLocalStorage("sppg_profilYayasan", Data.mockProfilYayasan);
+  } else {
+    Data.mockProfilSPPG.nama = document.getElementById("profil-nama").value;
+    Data.mockProfilSPPG.alamat = document.getElementById("profil-alamat").value;
+    Data.mockProfilSPPG.telp = document.getElementById("profil-telp").value;
+    Data.mockProfilSPPG.email = document.getElementById("profil-email").value;
+    Data.mockProfilSPPG.penanggung_jawab =
+      document.getElementById("profil-person").value;
+    Data.saveToLocalStorage("sppg_profilSppg", Data.mockProfilSPPG);
+  }
+
+  showToast("Profil berhasil diperbarui.", "success");
+  renderProfilView(type);
+}
+
+// Setup functions to be called by the main router/app logic
+export function setupProfilYayasanPage() {
+  renderProfilView("yayasan");
+}
+
+export function setupProfilSppgPage() {
+  renderProfilView("sppg");
+}
+
+// ===================================================================================
+// BAGIAN F: EKSPOR HANDLER
 // ===================================================================================
 export const formHandlers = {
+  karyawanForm: handleKaryawanFormSubmit,
   supplierForm: handleSupplierFormSubmit,
   schoolForm: handleSchoolFormSubmit,
   userForm: handleUserFormSubmit,
 };
 
-// PERBAIKAN: Seluruh delete handler diubah menggunakan findIndex dan splice
 export const deleteHandlers = {
   karyawan: (id) => {
     const index = Data.mockKaryawan.findIndex((k) => k.id === id);
