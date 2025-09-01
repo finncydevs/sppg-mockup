@@ -76,7 +76,7 @@ function renderPOTable() {
     .join("");
 }
 
-function addPOItemLine(item = {}) {
+export function addPOItemLine(item = {}) {
   const container = document.getElementById("itemLines");
   const newLine = document.createElement("div");
   newLine.className = "item-line grid grid-cols-12 gap-4 items-center";
@@ -626,7 +626,7 @@ function renderShipmentList() {
     .join("");
 }
 
-function addDeliveryLine(line = {}) {
+export function addDeliveryLine(line = {}) {
   const container = document.getElementById("deliveryLines");
   if (!container) {
     console.error("Element with ID 'deliveryLines' not found");

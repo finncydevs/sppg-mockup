@@ -174,6 +174,7 @@ export let mockProfilYayasan = loadFromLocalStorage("sppg_profilYayasan", {
   email: "info@cerdasbangsa.org",
   pimpinan: "Dr. H. Susilo Bambang",
 });
+
 export let mockProfilSPPG = loadFromLocalStorage("sppg_profilSppg", {
   nama: "Dapur Sehat SPPG Jakarta Pusat",
   alamat: "Jl. Kesehatan No. 10, Jakarta",

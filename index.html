@@ -39,72 +39,73 @@
             x-transition:leave-end="opacity-0"
         ></div>
 
-        <aside 
-            id="sidebar" 
-            class="sidebar fixed inset-y-0 left-0 bg-white w-64 shadow-lg z-30 flex flex-col transition-transform duration-300 ease-in-out md:relative md:translate-x-0"
-            :class="$store.app.sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
-            >
-            <div class="flex items-center justify-center p-4 border-b flex-shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
-                <h1 class="text-xl font-bold ml-2">SPPG Super App</h1>
+       <aside 
+    id="sidebar" 
+    class="sidebar fixed inset-y-0 left-0 bg-white w-64 shadow-lg z-30 flex flex-col transition-transform duration-300 ease-in-out md:relative md:translate-x-0"
+    :class="$store.app.sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+    >
+    <div class="flex items-center justify-center p-4 border-b flex-shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
+        <h1 class="text-xl font-bold ml-2">SPPG Super App</h1>
+    </div>
+    <nav id="main-nav" class="flex-1 overflow-y-auto p-2 space-y-1">
+        <a href="#" data-page="pelaporan" class="nav-link flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+            <span class="ml-3">Dashboard</span>
+        </a>
+
+        <div x-data="{ open: true }" class="menu-group">
+            <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg">
+                <span class="flex items-center"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h6M9 11.25h6m-6 4.5h6M5.25 6h.008v.008H5.25V6zm.75 4.5h.008v.008H6v-.008zm-.75 4.5h.008v.008H5.25v-.008zm13.5-9h.008v.008h-.008V6zm-.75 4.5h.008v.008h-.008v-.008zm.75 4.5h.008v.008h-.008v-.008z" /></svg><span class="ml-3">Operasional</span></span>
+                <svg class="chevron h-5 w-5 transition-transform" :class="{ 'chevron-rotated': open }" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+            </button>
+            <div class="ml-4 pl-4 border-l border-gray-200" x-show="open" x-collapse>
+                <a href="#" data-page="perencanaan_menu" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Perencanaan Menu</a>
+                <a href="#" data-page="pengadaan" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Pengadaan</a>
+                <a href="#" data-page="produksi_stok" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Produksi & Stok</a>
+                <a href="#" data-page="distribusi" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Distribusi</a>
             </div>
-            <nav id="main-nav" class="flex-1 overflow-y-auto p-2 space-y-1">
-                <a href="#" data-page="pelaporan" class="nav-link flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
-                    <span class="ml-3">Dashboard</span>
-                </a>
+        </div>
 
-                <div x-data="{ open: true }">
-                    <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg">
-                        <span class="flex items-center"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0l-.07.002z" /></svg><span class="ml-3">Perencanaan</span></span>
-                        <svg class="chevron h-5 w-5 transition-transform" :class="{ 'chevron-rotated': open }" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
-                    </button>
-                    <div class="ml-4 pl-4 border-l border-gray-200" x-show="open" x-collapse>
-                        <a href="#" data-page="perencanaan_menu" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Resep & Siklus Menu</a>
-                    </div>
-                </div>
+        <div x-data="{ open: true }" class="menu-group">
+            <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg">
+                <span class="flex items-center"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /></svg><span class="ml-3">Administrasi</span></span>
+                <svg class="chevron h-5 w-5 transition-transform" :class="{ 'chevron-rotated': open }" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+            </button>
+            <div class="ml-4 pl-4 border-l border-gray-200" x-show="open" x-collapse>
+                <a href="#" data-page="keuangan" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Keuangan</a>
+                <a href="#" data-page="aset" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Manajemen Aset</a>
+                <a href="#" data-page="laporan_pengantaran" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Laporan Pengantaran</a>
+            </div>
+        </div>
 
-                <div x-data="{ open: true }">
-                    <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg">
-                        <span class="flex items-center"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h6M9 11.25h6m-6 4.5h6M5.25 6h.008v.008H5.25V6zm.75 4.5h.008v.008H6v-.008zm-.75 4.5h.008v.008H5.25v-.008zm13.5-9h.008v.008h-.008V6zm-.75 4.5h.008v.008h-.008v-.008zm.75 4.5h.008v.008h-.008v-.008z" /></svg><span class="ml-3">Proses Harian</span></span>
-                        <svg class="chevron h-5 w-5 transition-transform" :class="{ 'chevron-rotated': open }" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
-                    </button>
-                    <div class="ml-4 pl-4 border-l border-gray-200" x-show="open" x-collapse>
-                        <a href="#" data-page="pengadaan" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Pengadaan & Penerimaan</a>
-                        <a href="#" data-page="produksi_stok" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Produksi & Stok</a>
-                        <a href="#" data-page="distribusi" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Distribusi</a>
-                    </div>
-                </div>
-                
-                <div x-data="{ open: true }">
-                    <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg">
-                        <span class="flex items-center"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /></svg><span class="ml-3">Administrasi & SDM</span></span>
-                        <svg class="chevron h-5 w-5 transition-transform" :class="{ 'chevron-rotated': open }" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
-                    </button>
-                    <div class="ml-4 pl-4 border-l border-gray-200" x-show="open" x-collapse>
-                        <a href="#" data-page="keuangan" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Keuangan</a>
-                        <a href="#" data-page="gaji" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Gaji Karyawan</a>
-                        <a href="#" data-page="absensi" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Absensi Karyawan</a>
-                        <a href="#" data-page="aset" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Manajemen Aset</a>
-                    </div>
-                </div>
-
-                <div x-data="{ open: false }">
-                    <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg">
-                        <span class="flex items-center"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12a7.5 7.5 0 0015 0m-15 0a7.5 7.5 0 1115 0m-15 0H3m16.5 0H21m-1.5 0H12m-8.457 3.07A7.5 7.5 0 0112 3v2.25m0 12.5v-2.25" /></svg><span class="ml-3">Sistem</span></span>
-                        <svg class="chevron h-5 w-5 transition-transform" :class="{ 'chevron-rotated': open }" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
-                    </button>
-                    <div class="ml-4 pl-4 border-l border-gray-200" x-show="open" x-collapse>
-                        <a href="#" data-page="master_karyawan" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Master Karyawan</a>
-                        <a href="#" data-page="master_supplier" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Master Supplier</a>
-                        <a href="#" data-page="master_sekolah" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Master Sekolah</a>
-                        <a href="#" data-page="master_user" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Master Pengguna</a>
-                        <a href="#" data-page="profil_yayasan" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Profil Yayasan</a>
-                        <a href="#" data-page="profil_sppg" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Profil SPPG</a>
-                    </div>
-                </div>
-            </nav>
-        </aside>
+        <div x-data="{ open: true }" class="menu-group">
+            <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg">
+                <span class="flex items-center"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-4.663M12 12A3 3 0 1012 6a3 3 0 000 6z" /></svg><span class="ml-3">Manajemen SDM</span></span>
+                <svg class="chevron h-5 w-5 transition-transform" :class="{ 'chevron-rotated': open }" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+            </button>
+            <div class="ml-4 pl-4 border-l border-gray-200" x-show="open" x-collapse>
+                <a href="#" data-page="master_karyawan" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Data Karyawan</a>
+                <a href="#" data-page="absensi" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Absensi Karyawan</a>
+                <a href="#" data-page="gaji" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Gaji Karyawan</a>
+            </div>
+        </div>
+        
+        <div x-data="{ open: false }" class="menu-group">
+            <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg">
+                <span class="flex items-center"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12a7.5 7.5 0 0015 0m-15 0a7.5 7.5 0 1115 0m-15 0H3m16.5 0H21m-1.5 0H12m-8.457 3.07A7.5 7.5 0 0112 3v2.25m0 12.5v-2.25" /></svg><span class="ml-3">Pengaturan</span></span>
+                <svg class="chevron h-5 w-5 transition-transform" :class="{ 'chevron-rotated': open }" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+            </button>
+            <div class="ml-4 pl-4 border-l border-gray-200" x-show="open" x-collapse>
+                <a href="#" data-page="master_supplier" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Data Supplier</a>
+                <a href="#" data-page="master_sekolah" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Data Sekolah</a>
+                <a href="#" data-page="master_user" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Manajemen Pengguna</a>
+                <a href="#" data-page="profil_yayasan" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Profil Yayasan</a>
+                <a href="#" data-page="profil_sppg" class="nav-link flex items-center px-4 py-2 text-gray-500 hover:text-blue-600 rounded-lg text-sm">Profil SPPG</a>
+            </div>
+        </div>
+    </nav>
+</aside>
 
         <div class="flex-1 flex flex-col overflow-hidden">
             <header class="flex justify-between items-center p-4 bg-white border-b">

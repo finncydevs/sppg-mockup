@@ -138,16 +138,20 @@ Object.assign(window, {
   openWorkOrderModal: ProsesHarian.openWorkOrderModal,
   openShipmentModal: ProsesHarian.openShipmentModal,
   cetakSuratJalan: ProsesHarian.cetakSuratJalan,
+  addIngredientLine: Perencanaan.addIngredientLine,
   // Administrasi
   openKeuanganModal: Administrasi.openKeuanganModal,
   openAsetModal: Administrasi.openAsetModal,
   openGajiModal: Administrasi.openGajiModal,
-  openKaryawanModal: Administrasi.openKaryawanModal, // Note: Karyawan modal is in Administrasi but page is in Master
   // Master Data
   openSupplierModal: MasterData.openSupplierModal,
   openSchoolModal: MasterData.openSchoolModal,
   openUserModal: MasterData.openUserModal,
   openItemModal: MasterData.openItemModal,
+  addPOItemLine: ProsesHarian.addPOItemLine, // <-- TAMBAHKAN INI
+  updatePOTotalAmount: ProsesHarian.updatePOTotalAmount, // <-- TAMBAHKAN INI
+  openKaryawanModal: MasterData.openKaryawanModal,
+  addDeliveryLine: ProsesHarian.addDeliveryLine,
 });
 
 // ===================================================================================

@@ -46,6 +46,69 @@ export function renderKaryawanTable() {
     .join("");
 }
 
+// FUNGSI YANG DIPINDAHKAN & DIPERBAIKI
+export function openKaryawanModal(id = null) {
+  const form = document.getElementById("karyawanForm");
+  form.reset();
+  document.getElementById("karyawanId").value = "";
+
+  if (id) {
+    const karyawan = Data.mockKaryawan.find((k) => k.id === id);
+    document.getElementById("modalTitleKaryawan").textContent = "Edit Karyawan";
+    document.getElementById("karyawanId").value = karyawan.id;
+    document.getElementById("karyawanNama").value = karyawan.nama;
+    document.getElementById("karyawanPosisi").value = karyawan.posisi;
+    document.getElementById("karyawanTglBergabung").value =
+      karyawan.tgl_bergabung;
+    document.getElementById("karyawanStatus").value = karyawan.status;
+  } else {
+    document.getElementById("modalTitleKaryawan").textContent =
+      "Tambah Karyawan Baru";
+    document.getElementById("karyawanTglBergabung").value = formatInputDate(
+      new Date()
+    );
+  }
+  Alpine.store("modals").karyawan = true;
+}
+
+// FUNGSI YANG DIPINDAHKAN & DIPERBAIKI
+function handleKaryawanFormSubmit(e) {
+  e.preventDefault();
+  const id = document.getElementById("karyawanId").value;
+  const karyawanData = {
+    nama: document.getElementById("karyawanNama").value.trim(),
+    posisi: document.getElementById("karyawanPosisi").value.trim(),
+    tgl_bergabung: document.getElementById("karyawanTglBergabung").value,
+    status: document.getElementById("karyawanStatus").value,
+  };
+
+  if (
+    !karyawanData.nama ||
+    !karyawanData.posisi ||
+    !karyawanData.tgl_bergabung
+  ) {
+    showToast("Nama, Posisi, dan Tanggal Bergabung harus diisi.", "error");
+    return;
+  }
+
+  if (id) {
+    const index = Data.mockKaryawan.findIndex((k) => k.id == id);
+    Data.mockKaryawan[index] = { ...Data.mockKaryawan[index], ...karyawanData };
+    showToast("Data karyawan berhasil diperbarui.", "success");
+  } else {
+    const newId =
+      Data.mockKaryawan.length > 0
+        ? Math.max(...Data.mockKaryawan.map((k) => k.id)) + 1
+        : 1;
+    Data.mockKaryawan.push({ id: newId, ...karyawanData });
+    showToast("Karyawan baru berhasil ditambahkan.", "success");
+  }
+
+  Data.saveToLocalStorage("sppg_karyawan", Data.mockKaryawan);
+  Alpine.store("modals").karyawan = false;
+  renderKaryawanTable();
+}
+
 // ===================================================================================
 // BAGIAN B: MASTER SUPPLIER
 // ===================================================================================
@@ -301,59 +364,11 @@ function handleUserFormSubmit(e) {
 }
 
 // ===================================================================================
-// BAGIAN E: EKSPOR HANDLER
+// BAGIAN E: PROFIL YAYASAN & SPPG (DIRAPIKAN)
 // ===================================================================================
-export const formHandlers = {
-  supplierForm: handleSupplierFormSubmit,
-  schoolForm: handleSchoolFormSubmit,
-  userForm: handleUserFormSubmit,
-};
 
-// PERBAIKAN: Seluruh delete handler diubah menggunakan findIndex dan splice
-export const deleteHandlers = {
-  karyawan: (id) => {
-    const index = Data.mockKaryawan.findIndex((k) => k.id === id);
-    if (index > -1) {
-      Data.mockKaryawan.splice(index, 1);
-      Data.saveToLocalStorage("sppg_karyawan", Data.mockKaryawan);
-      renderKaryawanTable();
-      showToast("Data karyawan berhasil dihapus.", "success");
-    }
-  },
-  supplier: (id) => {
-    const index = Data.mockSuppliers.findIndex((s) => s.id === id);
-    if (index > -1) {
-      Data.mockSuppliers.splice(index, 1);
-      Data.saveToLocalStorage("sppg_suppliers", Data.mockSuppliers);
-      renderMasterDataSuppliersTable();
-      showToast("Supplier berhasil dihapus.", "success");
-    }
-  },
-  school: (id) => {
-    const index = Data.mockSchools.findIndex((s) => s.id === id);
-    if (index > -1) {
-      Data.mockSchools.splice(index, 1);
-      Data.saveToLocalStorage("sppg_schools", Data.mockSchools);
-      renderMasterDataSchoolsTable();
-      showToast("Sekolah berhasil dihapus.", "success");
-    }
-  },
-  user: (id) => {
-    const index = Data.mockUsers.findIndex((u) => u.id === id);
-    if (index > -1) {
-      Data.mockUsers.splice(index, 1);
-      Data.saveToLocalStorage("sppg_users", Data.mockUsers);
-      renderMasterDataUsersTable();
-      showToast("Pengguna berhasil dihapus.", "success");
-    }
-  },
-};
-/**
- * Renders the profile view (read-only mode).
- * @param {string} type - 'yayasan' or 'sppg'.
- */
 function renderProfilView(type) {
-  const contentEl = document.getElementById("master-content"); // Assumes this is your main content container
+  const contentEl = document.getElementById("master-content");
   const isYayasan = type === "yayasan";
   const data = isYayasan ? Data.mockProfilYayasan : Data.mockProfilSPPG;
   const title = isYayasan ? "Profil Yayasan" : "Profil SPPG";
@@ -400,10 +415,6 @@ function renderProfilView(type) {
     .addEventListener("click", () => renderProfilEdit(type));
 }
 
-/**
- * Renders the profile edit form.
- * @param {string} type - 'yayasan' or 'sppg'.
- */
 function renderProfilEdit(type) {
   const contentEl = document.getElementById("master-content");
   const isYayasan = type === "yayasan";
@@ -461,28 +472,27 @@ function renderProfilEdit(type) {
     .addEventListener("submit", (e) => handleProfilFormSubmit(e, type));
 }
 
-/**
- * Handles the submission of the profile edit form.
- * @param {Event} e - The form submission event.
- * @param {string} type - 'yayasan' or 'sppg'.
- */
 function handleProfilFormSubmit(e, type) {
   e.preventDefault();
   const isYayasan = type === "yayasan";
 
   if (isYayasan) {
     Data.mockProfilYayasan.nama = document.getElementById("profil-nama").value;
-    Data.mockProfilYayasan.alamat = document.getElementById("profil-alamat").value;
+    Data.mockProfilYayasan.alamat =
+      document.getElementById("profil-alamat").value;
     Data.mockProfilYayasan.telp = document.getElementById("profil-telp").value;
-    Data.mockProfilYayasan.email = document.getElementById("profil-email").value;
-    Data.mockProfilYayasan.pimpinan = document.getElementById("profil-person").value;
+    Data.mockProfilYayasan.email =
+      document.getElementById("profil-email").value;
+    Data.mockProfilYayasan.pimpinan =
+      document.getElementById("profil-person").value;
     Data.saveToLocalStorage("sppg_profilYayasan", Data.mockProfilYayasan);
   } else {
     Data.mockProfilSPPG.nama = document.getElementById("profil-nama").value;
     Data.mockProfilSPPG.alamat = document.getElementById("profil-alamat").value;
     Data.mockProfilSPPG.telp = document.getElementById("profil-telp").value;
     Data.mockProfilSPPG.email = document.getElementById("profil-email").value;
-    Data.mockProfilSPPG.penanggung_jawab = document.getElementById("profil-person").value;
+    Data.mockProfilSPPG.penanggung_jawab =
+      document.getElementById("profil-person").value;
     Data.saveToLocalStorage("sppg_profilSppg", Data.mockProfilSPPG);
   }
 
@@ -498,3 +508,52 @@ export function setupProfilYayasanPage() {
 export function setupProfilSppgPage() {
   renderProfilView("sppg");
 }
+
+// ===================================================================================
+// BAGIAN F: EKSPOR HANDLER
+// ===================================================================================
+export const formHandlers = {
+  karyawanForm: handleKaryawanFormSubmit,
+  supplierForm: handleSupplierFormSubmit,
+  schoolForm: handleSchoolFormSubmit,
+  userForm: handleUserFormSubmit,
+};
+
+export const deleteHandlers = {
+  karyawan: (id) => {
+    const index = Data.mockKaryawan.findIndex((k) => k.id === id);
+    if (index > -1) {
+      Data.mockKaryawan.splice(index, 1);
+      Data.saveToLocalStorage("sppg_karyawan", Data.mockKaryawan);
+      renderKaryawanTable();
+      showToast("Data karyawan berhasil dihapus.", "success");
+    }
+  },
+  supplier: (id) => {
+    const index = Data.mockSuppliers.findIndex((s) => s.id === id);
+    if (index > -1) {
+      Data.mockSuppliers.splice(index, 1);
+      Data.saveToLocalStorage("sppg_suppliers", Data.mockSuppliers);
+      renderMasterDataSuppliersTable();
+      showToast("Supplier berhasil dihapus.", "success");
+    }
+  },
+  school: (id) => {
+    const index = Data.mockSchools.findIndex((s) => s.id === id);
+    if (index > -1) {
+      Data.mockSchools.splice(index, 1);
+      Data.saveToLocalStorage("sppg_schools", Data.mockSchools);
+      renderMasterDataSchoolsTable();
+      showToast("Sekolah berhasil dihapus.", "success");
+    }
+  },
+  user: (id) => {
+    const index = Data.mockUsers.findIndex((u) => u.id === id);
+    if (index > -1) {
+      Data.mockUsers.splice(index, 1);
+      Data.saveToLocalStorage("sppg_users", Data.mockUsers);
+      renderMasterDataUsersTable();
+      showToast("Pengguna berhasil dihapus.", "success");
+    }
+  },
+};
