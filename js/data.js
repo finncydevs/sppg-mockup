@@ -118,7 +118,9 @@ export let mockRecipes = loadFromLocalStorage("sppg_recipes", [
     ],
   },
 ]);
-export let mockSiklusMenu = loadFromLocalStorage("sppg_siklusMenu", {}); // Data siklus menu untuk 20 hari, format: { "1": 101, "2": 102 }
+export let mockSiklusMenu = loadFromLocalStorage("sppg_siklusMenu", {
+  "2025-08-27": 101,
+}); // Data contoh untuk hari ini
 export let workOrders = loadFromLocalStorage("sppg_workOrders", [
   {
     id: 201,
