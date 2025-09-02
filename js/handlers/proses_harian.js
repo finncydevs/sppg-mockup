@@ -549,18 +549,38 @@ export function setupDistribusiPage() {
   if (startDateInput) {
     startDateInput.value = formatInputDate(today);
     startDateInput.addEventListener("change", renderShipmentList);
-  } else {
-    console.error("Element with ID 'distribusiStartDate' not found");
   }
-
   if (endDateInput) {
     endDateInput.value = formatInputDate(today);
     endDateInput.addEventListener("change", renderShipmentList);
-  } else {
-    console.error("Element with ID 'distribusiEndDate' not found");
   }
 
   renderShipmentList();
+}
+
+// FUNGSI BARU UNTUK MENGHITUNG STATUS DINAMIS
+function getDynamicShipmentStatus(shipment) {
+  const lines = shipment.delivery_lines;
+  if (!lines || lines.length === 0) {
+    return shipment.status; // Jika tidak ada tujuan, gunakan status asli
+  }
+
+  const totalCount = lines.length;
+  const deliveredCount = lines.filter((l) => l.status === "Terkirim").length;
+  const failedCount = lines.filter((l) => l.status === "Gagal Kirim").length;
+  const reportedCount = deliveredCount + failedCount;
+
+  if (reportedCount === 0) {
+    return "Direncanakan"; // Belum ada laporan sama sekali
+  }
+  if (reportedCount === totalCount) {
+    return "Selesai"; // Semua tujuan sudah dilaporkan
+  }
+  if (reportedCount > 0) {
+    return "Berlangsung"; // Sebagian sudah dilaporkan
+  }
+
+  return shipment.status; // Fallback untuk kondisi lain
 }
 
 function renderShipmentList() {
@@ -568,7 +588,6 @@ function renderShipmentList() {
   const endDate = document.getElementById("distribusiEndDate").value;
 
   if (!startDate || !endDate) {
-    console.error("Start date or end date is missing");
     return;
   }
 
@@ -583,7 +602,6 @@ function renderShipmentList() {
 
   const listContainer = document.getElementById("shipmentList");
   if (!listContainer) {
-    console.error("Element with ID 'shipmentList' not found");
     return;
   }
 
@@ -594,34 +612,36 @@ function renderShipmentList() {
 
   listContainer.innerHTML = filtered
     .map((s) => {
-      const driver = Data.mockDrivers.find((d) => d.id == s.driver_id);
+      // PERUBAHAN DI SINI: Kita memanggil getDynamicShipmentStatus(s)
+      const dynamicStatus = getDynamicShipmentStatus(s);
+
       return `<div class="bg-white border rounded-lg p-4 shadow-sm">
-              <div class="flex justify-between items-start">
-                  <div>
-                      <p class="font-semibold">${s.shipment_number}</p>
-                      <p class="text-sm text-gray-500">${
-                        s.departure_time
-                          ? formatDate(s.departure_time)
-                          : "Belum Berangkat"
-                      }</p>
-                  </div>
-                  ${getStatusBadge(s.status)}
-              </div>
-              <div class="mt-4 flex justify-between items-center">
-                  <p class="text-sm">${s.delivery_lines.length} tujuan</p>
-                  <div class="space-x-2">
-                      <button onclick="cetakSuratJalan('${
-                        s.id
-                      }')" class="text-green-600 hover:underline text-sm">Cetak Surat Jalan</button>
-                      <button onclick="openShipmentModal('${
-                        s.id
-                      }')" class="text-blue-600 hover:underline text-sm">Edit</button>
-                      <button onclick="openDeleteModal('distribusi', '${s.id}', '${
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="font-semibold">${s.shipment_number}</p>
+                    <p class="text-sm text-gray-500">${
+                      s.departure_time
+                        ? formatDate(s.departure_time)
+                        : "Belum Berangkat"
+                    }</p>
+                </div>
+                ${getStatusBadge(dynamicStatus)}
+            </div>
+            <div class="mt-4 flex justify-between items-center">
+                <p class="text-sm">${s.delivery_lines.length} tujuan</p>
+                <div class="space-x-2">
+                    <button onclick="cetakSuratJalan(${
+                      s.id
+                    })" class="text-green-600 hover:underline text-sm">Cetak Surat Jalan</button>
+                    <button onclick="openShipmentModal(${
+                      s.id
+                    })" class="text-blue-600 hover:underline text-sm">Detail/Edit</button>
+                    <button onclick="openDeleteModal('distribusi', ${s.id}, '${
         s.shipment_number
       }')" class="text-red-600 hover:underline text-sm">Hapus</button>
-                  </div>
-              </div>
-          </div>`;
+                </div>
+            </div>
+        </div>`;
     })
     .join("");
 }
