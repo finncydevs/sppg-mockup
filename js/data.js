@@ -72,9 +72,10 @@ export let mockSchools = loadFromLocalStorage("sppg_schools", [
   },
 ]);
 export let mockUsers = loadFromLocalStorage("sppg_users", [
-  { id: 901, name: "Bapak Kepala", role: "Manajer SPPG" },
-  { id: 905, name: "Admin Utama", role: "Admin" },
-]);
+  { id: 901, name: "Bapak Kepala", role: "Admin", password: "123" },
+  { id: 902, name: "Ibu Manager", role: "Manajer SPPG", password: "123" },
+  { id: 903, name: "Budi Santoso", role: "Driver", password: "123" }, // Sesuaikan ID jika perlu
+]);// di dalam mockUsers
 export let mockKaryawan = loadFromLocalStorage("sppg_karyawan", [
   {
     id: 1001,
@@ -140,7 +141,17 @@ export let shipments = loadFromLocalStorage("sppg_shipments", [
     recipe_id: 101,
     departure_time: "2025-08-27T09:30:00",
     status: "Selesai",
-    delivery_lines: [{ school_id: 501, quantity: 500, status: "Terkirim" }],
+    delivery_lines: [
+      {
+        school_id: 501,
+        quantity: 50,
+        status: "Terkirim", // Diupdate oleh driver
+        report_time: "2025-09-01T10:30:00Z", // Waktu laporan dikirim
+        receiver_name: "Ibu Siti", // Nama penerima
+        notes: "Diterima di ruang guru.", // Catatan dari driver
+        photo_url: "images/bukti_kirim_123.jpg", // Link ke foto bukti
+      },
+    ],
   },
 ]);
 export let mockGaji = loadFromLocalStorage("sppg_gaji", [
@@ -186,6 +197,7 @@ export let mockProfilSPPG = loadFromLocalStorage("sppg_profilSppg", {
 // --- App State ---
 export let appState = {
   currentPage: "pelaporan",
+  isLoggedIn: false,
   currentUser: { type: "Manajer SPPG", name: "Bapak Kepala" },
   siklusMenu: { currentDate: new Date() },
 };

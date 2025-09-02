@@ -9,6 +9,7 @@ import {
 // ===================================================================================
 // BAGIAN A: DASHBOARD / PELAPORAN
 // ===================================================================================
+// Ganti seluruh fungsi setupPelaporanPage Anda dengan ini:
 export function setupPelaporanPage() {
   const today = new Date();
   const todayStr = formatInputDate(today);
@@ -22,8 +23,11 @@ export function setupPelaporanPage() {
     .flatMap((s) => s.delivery_lines)
     .filter((l) => l.status === "Terkirim")
     .reduce((sum, l) => sum + l.quantity, 0);
-  document.getElementById("kpi-total-porsi").textContent =
-    totalPortions.toLocaleString("id-ID");
+  
+  const kpiPorsiElement = document.getElementById("kpi-total-porsi");
+  if (kpiPorsiElement) {
+    kpiPorsiElement.textContent = totalPortions.toLocaleString("id-ID");
+  }
 
   // KPI 2: Kehadiran Karyawan Hari Ini
   const attendedKaryawan = (Data.mockAbsensi[todayStr] || []).filter(
@@ -36,12 +40,17 @@ export function setupPelaporanPage() {
     totalKaryawan > 0
       ? ((attendedKaryawan / totalKaryawan) * 100).toFixed(0)
       : 0;
-  document.getElementById(
-    "kpi-attendance-rate"
-  ).textContent = `${attendanceRate}%`;
-  document.getElementById(
-    "kpi-attendance-detail"
-  ).textContent = `${attendedKaryawan} dari ${totalKaryawan} karyawan`;
+
+  const kpiAttendanceRate = document.getElementById("kpi-attendance-rate");
+  if (kpiAttendanceRate) {
+    kpiAttendanceRate.textContent = `${attendanceRate}%`;
+  }
+
+  const kpiAttendanceDetail = document.getElementById("kpi-attendance-detail");
+  if (kpiAttendanceDetail) {
+    kpiAttendanceDetail.textContent = `${attendedKaryawan} dari ${totalKaryawan} karyawan`;
+  }
+
 
   // KPI 3: Total Pengadaan Bulan Ini
   const totalProcurement = Data.purchaseOrders
@@ -49,16 +58,21 @@ export function setupPelaporanPage() {
       (p) => p.status !== "Dibatalkan" && p.order_date.startsWith(currentMonth)
     )
     .reduce((sum, p) => sum + p.total_amount, 0);
-  document.getElementById("kpi-total-procurement").textContent =
-    formatCurrency(totalProcurement);
+
+  const kpiProcurement = document.getElementById("kpi-total-procurement");
+  if (kpiProcurement) {
+    kpiProcurement.textContent = formatCurrency(totalProcurement);
+  }
 
   // KPI 4: Total Pengeluaran Bulan Ini (Pengadaan + Manual)
   const otherExpenses = Data.mockKeuangan
     .filter((t) => t.type === "Pengeluaran" && t.date.startsWith(currentMonth))
     .reduce((sum, t) => sum + t.amount, 0);
-  document.getElementById("kpi-total-expense").textContent = formatCurrency(
-    totalProcurement + otherExpenses
-  );
+  
+  const kpiExpense = document.getElementById("kpi-total-expense");
+  if (kpiExpense) {
+    kpiExpense.textContent = formatCurrency(totalProcurement + otherExpenses);
+  }
 }
 
 // ===================================================================================
@@ -133,15 +147,7 @@ function generateLaporanPengantaran() {
 
     // Pengiriman MBG Document
     html += generateDeliveryDocument(
-      "Pengiriman MBG",
-      school,
-      deliveries[0].shipment.departure_time,
-      totalQuantity
-    );
-
-    // Pengambilan MBG Document
-    html += generateDeliveryDocument(
-      "Pengambilan MBG",
+      "Serah Terima Paket Makanan", // Judul bisa lebih umum
       school,
       deliveries[0].shipment.departure_time,
       totalQuantity

@@ -1,9 +1,5 @@
-// js/main.js
+// js/main.js (Versi Final dengan Perbaikan Timing)
 
-// ===================================================================================
-// SECTION 1: IMPORTS
-// - Mengimpor semua data, UI, dan fungsi dari file-file terpisah.
-// ===================================================================================
 import * as Data from "./data.js";
 import * as UI from "./ui.js";
 import * as Perencanaan from "./handlers/perencanaan.js";
@@ -11,17 +7,17 @@ import * as ProsesHarian from "./handlers/proses_harian.js";
 import * as Administrasi from "./handlers/administrasi.js";
 import * as Laporan from "./handlers/laporan.js";
 import * as MasterData from "./handlers/master_data.js";
+import * as Driver from "./handlers/driver.js";
+import { checkLoginStatus } from "./auth.js";
 
 // ===================================================================================
-// SECTION 2: GLOBAL ELEMENTS & UTILITIES
+// SECTION 1: DEKLARASI VARIABEL GLOBAL (TANPA INISIALISASI)
 // ===================================================================================
-const pageContent = document.getElementById("page-content");
-const pageTitle = document.getElementById("page-title");
-const mainNav = document.getElementById("main-nav");
-const modalsContainer = document.getElementById("all-modals");
-const userInfo = document.getElementById("user-info");
+let pageContent, pageTitle, mainNav, modalsContainer, userInfo;
 
-// Ekspor utilitas agar bisa diimpor dan digunakan oleh file handler lain
+// ===================================================================================
+// SECTION 2: UTILITIES
+// ===================================================================================
 export const formatDate = (date) =>
   new Date(date).toLocaleDateString("id-ID", {
     day: "2-digit",
@@ -42,25 +38,20 @@ export const formatCurrency = (amount) =>
     currency: "IDR",
     minimumFractionDigits: 0,
   }).format(amount);
-
 export const showToast = (message, type = "success") => {
   const toast = document.getElementById("toast");
   const toastMessage = document.getElementById("toast-message");
   if (!toast || !toastMessage) return;
-
   toastMessage.textContent = message;
   toast.classList.remove("bg-green-500", "bg-red-500", "bg-blue-500");
-
   if (type === "success") toast.classList.add("bg-green-500");
   else if (type === "error") toast.classList.add("bg-red-500");
   else toast.classList.add("bg-blue-500");
-
   toast.classList.remove("translate-x-[120%]");
   setTimeout(() => {
     toast.classList.add("translate-x-[120%]");
   }, 3000);
 };
-
 export const getStatusBadge = (status) => {
   const statuses = {
     Draft: "bg-gray-100 text-gray-800",
@@ -71,6 +62,7 @@ export const getStatusBadge = (status) => {
     Selesai: "bg-green-100 text-green-800",
     Pending: "bg-gray-100 text-gray-800",
     Terkirim: "bg-green-100 text-green-800",
+    "Gagal Kirim": "bg-red-100 text-red-800",
     Aktif: "bg-green-100 text-green-800",
     "Tidak Aktif": "bg-red-100 text-red-800",
     Baik: "bg-green-100 text-green-800",
@@ -81,7 +73,6 @@ export const getStatusBadge = (status) => {
     statuses[status] || "bg-gray-200"
   }">${status}</span>`;
 };
-
 export const generateSelectOptions = (data, valueKey, textKey) =>
   data
     .map(
@@ -92,16 +83,12 @@ export const generateSelectOptions = (data, valueKey, textKey) =>
 // ===================================================================================
 // SECTION 3: GLOBAL EVENT HANDLERS & WINDOW FUNCTIONS
 // ===================================================================================
-
-// Gabungkan semua form handler dari setiap modul
 const formHandlers = {
   ...Perencanaan.formHandlers,
   ...ProsesHarian.formHandlers,
   ...Administrasi.formHandlers,
   ...MasterData.formHandlers,
 };
-
-// Gabungkan semua delete handler dari setiap modul
 const deleteHandlers = {
   ...Perencanaan.deleteHandlers,
   ...ProsesHarian.deleteHandlers,
@@ -109,7 +96,6 @@ const deleteHandlers = {
   ...MasterData.deleteHandlers,
 };
 
-// Fungsi ini harus global agar bisa dipanggil dari HTML
 window.openDeleteModal = function (type, id, name) {
   document.getElementById(
     "deleteConfirmMessage"
@@ -126,32 +112,28 @@ window.openDeleteModal = function (type, id, name) {
   }
 };
 
-// Jadikan semua fungsi "openModal" global agar bisa dipanggil dari `onclick` di HTML
 Object.assign(window, {
   openRecipeModal: Perencanaan.openRecipeModal,
   openRecipeDetailModal: Perencanaan.openRecipeDetailModal,
-  openSiklusMenuModal: Perencanaan.openSiklusMenuModal,
-  // Proses Harian
+  addIngredientLine: Perencanaan.addIngredientLine,
   openPOModal: ProsesHarian.openPOModal,
   openReceiptModal: ProsesHarian.openReceiptModal,
   openLotDetailModal: ProsesHarian.openLotDetailModal,
   openWorkOrderModal: ProsesHarian.openWorkOrderModal,
   openShipmentModal: ProsesHarian.openShipmentModal,
   cetakSuratJalan: ProsesHarian.cetakSuratJalan,
-  addIngredientLine: Perencanaan.addIngredientLine,
-  // Administrasi
+  addPOItemLine: ProsesHarian.addPOItemLine,
+  updatePOTotalAmount: ProsesHarian.updatePOTotalAmount,
+  addDeliveryLine: ProsesHarian.addDeliveryLine,
+  openItemModal: ProsesHarian.openItemModal,
   openKeuanganModal: Administrasi.openKeuanganModal,
   openAsetModal: Administrasi.openAsetModal,
   openGajiModal: Administrasi.openGajiModal,
-  // Master Data
+  openKaryawanModal: MasterData.openKaryawanModal,
   openSupplierModal: MasterData.openSupplierModal,
   openSchoolModal: MasterData.openSchoolModal,
   openUserModal: MasterData.openUserModal,
-  openItemModal: MasterData.openItemModal,
-  addPOItemLine: ProsesHarian.addPOItemLine, // <-- TAMBAHKAN INI
-  updatePOTotalAmount: ProsesHarian.updatePOTotalAmount, // <-- TAMBAHKAN INI
-  openKaryawanModal: MasterData.openKaryawanModal,
-  addDeliveryLine: ProsesHarian.addDeliveryLine,
+  openReportModal: Driver.openReportModal,
 });
 
 // ===================================================================================
@@ -159,7 +141,7 @@ Object.assign(window, {
 // ===================================================================================
 const pageMap = {
   pelaporan: {
-    title: "Dashboard & KPI",
+    title: "Dashboard",
     template: UI.pelaporanPageTemplate,
     setup: Laporan.setupPelaporanPage,
   },
@@ -169,7 +151,7 @@ const pageMap = {
     setup: Perencanaan.setupPerencanaanMenuPage,
   },
   pengadaan: {
-    title: "Pengadaan & Penerimaan",
+    title: "Pengadaan",
     template: UI.pengadaanPageTemplate,
     setup: ProsesHarian.setupPengadaanPage,
   },
@@ -183,20 +165,15 @@ const pageMap = {
     template: UI.distribusiPageTemplate,
     setup: ProsesHarian.setupDistribusiPage,
   },
+  laporan_driver: {
+    title: "Laporan Pengiriman",
+    template: UI.driverPageTemplate,
+    setup: Driver.setupDriverPage,
+  },
   keuangan: {
     title: "Keuangan",
     template: UI.keuanganPageTemplate,
     setup: Administrasi.setupKeuanganPage,
-  },
-  gaji: {
-    title: "Gaji Karyawan",
-    template: UI.gajiContentTemplate,
-    setup: Administrasi.setupGajiPage,
-  },
-  absensi: {
-    title: "Absensi Karyawan",
-    template: UI.absensiContentTemplate,
-    setup: Administrasi.setupAbsensiPage,
   },
   aset: {
     title: "Manajemen Aset",
@@ -209,56 +186,70 @@ const pageMap = {
     setup: Laporan.setupLaporanPengantaranPage,
   },
   master_karyawan: {
-    title: "Master Data Karyawan",
+    title: "Data Karyawan",
     template: UI.masterKaryawanTemplate,
     setup: MasterData.setupMasterKaryawanPage,
   },
+  absensi: {
+    title: "Absensi Karyawan",
+    template: UI.absensiContentTemplate,
+    setup: Administrasi.setupAbsensiPage,
+  },
+  gaji: {
+    title: "Gaji Karyawan",
+    template: UI.gajiContentTemplate,
+    setup: Administrasi.setupGajiPage,
+  },
   master_supplier: {
-    title: "Master Data Supplier",
+    title: "Data Supplier",
     template: UI.masterSuppliersTemplate,
     setup: MasterData.setupMasterSupplierPage,
   },
   master_sekolah: {
-    title: "Master Data Sekolah",
+    title: "Data Sekolah",
     template: UI.masterSchoolsTemplate,
     setup: MasterData.setupMasterSekolahPage,
   },
   master_user: {
-    title: "Master Data Pengguna",
+    title: "Manajemen Pengguna",
     template: UI.masterUsersTemplate,
     setup: MasterData.setupMasterUserPage,
   },
   profil_yayasan: {
     title: "Profil Yayasan",
-    template: UI.masterContentTemplate, // CHANGED: Use the new generic container
-    setup: MasterData.setupProfilYayasanPage, // CHANGED: Point to the function in MasterData
+    template: UI.masterContentTemplate,
+    setup: MasterData.setupProfilYayasanPage,
   },
   profil_sppg: {
     title: "Profil SPPG",
-    template: UI.masterContentTemplate, // CHANGED: Use the new generic container
-    setup: MasterData.setupProfilSppgPage, // CHANGED: Point to the function in MasterData
+    template: UI.masterContentTemplate,
+    setup: MasterData.setupProfilSppgPage,
   },
 };
 
 function navigate(pageId) {
+  if (!pageMap[pageId]) {
+    console.error(`Page "${pageId}" not found in pageMap.`);
+    pageId = "pelaporan";
+  }
+
   Data.appState.currentPage = pageId;
+  Data.saveToLocalStorage("sppg_appState", Data.appState);
   const page = pageMap[pageId];
 
   if (page) {
-    pageTitle.textContent = page.title;
-    pageContent.innerHTML = page.template;
-    page.setup();
+    if (pageTitle) pageTitle.textContent = page.title;
+    if (pageContent) pageContent.innerHTML = page.template;
+    if (page.setup) page.setup();
 
-    // Logika highlight navigasi yang lebih baik
     const activeClasses = ["bg-blue-100", "text-blue-700", "font-semibold"];
-
     document
       .querySelectorAll(".nav-link")
       .forEach((link) => link.classList.remove(...activeClasses));
     document
       .querySelectorAll(".menu-group button")
       .forEach((toggle) =>
-        toggle.classList.remove(...activeClasses, "bg-gray-100")
+        toggle.classList.remove("bg-gray-100", "font-semibold")
       );
 
     const activeLink = document.querySelector(
@@ -266,19 +257,25 @@ function navigate(pageId) {
     );
     if (activeLink) {
       activeLink.classList.add(...activeClasses);
-
       const parentToggle = activeLink
         .closest(".menu-group")
         ?.querySelector("button");
-      if (parentToggle) {
+      if (parentToggle)
         parentToggle.classList.add("bg-gray-100", "font-semibold");
-      }
     }
   }
 }
 
-function initializeApp() {
-  modalsContainer.innerHTML = UI.modalsTemplate;
+// Fungsi inisialisasi aplikasi utama (dipanggil setelah login berhasil)
+window.initializeApp = function () {
+  // PENTING: Cari elemen DOM di sini, SETELAH aplikasi utama muncul
+  pageContent = document.getElementById("page-content");
+  pageTitle = document.getElementById("page-title");
+  mainNav = document.getElementById("main-nav");
+  modalsContainer = document.getElementById("all-modals");
+  userInfo = document.getElementById("user-info");
+
+  if (modalsContainer) modalsContainer.innerHTML = UI.modalsTemplate;
 
   document.addEventListener("submit", (e) => {
     if (formHandlers[e.target.id]) {
@@ -287,18 +284,31 @@ function initializeApp() {
     }
   });
 
-  userInfo.textContent = `${Data.appState.currentUser.type}: ${Data.appState.currentUser.name}`;
+  if (Data.appState.currentUser && userInfo) {
+    userInfo.textContent = `${Data.appState.currentUser.role}: ${Data.appState.currentUser.name}`;
+  }
 
-  mainNav.addEventListener("click", (e) => {
-    const link = e.target.closest(".nav-link");
-    if (link) {
-      e.preventDefault();
-      navigate(link.dataset.page);
-      Alpine.store("app").sidebarOpen = false;
-    }
-  });
+  if (mainNav) {
+    mainNav.addEventListener("click", (e) => {
+      const link = e.target.closest(".nav-link");
+      if (link) {
+        e.preventDefault();
+        navigate(link.dataset.page);
+        if (Alpine.store("app")) Alpine.store("app").sidebarOpen = false;
+      }
+    });
+  }
 
-  navigate(Data.appState.currentPage);
-}
+  if (
+    Data.appState.currentUser &&
+    Data.appState.currentUser.role === "Driver"
+  ) {
+    navigate("laporan_driver");
+  } else {
+    navigate(Data.appState.currentPage || "pelaporan");
+  }
+};
 
-initializeApp();
+// --- TITIK AWAL APLIKASI ---
+// Memeriksa status login saat halaman pertama kali dimuat.
+checkLoginStatus();
