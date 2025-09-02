@@ -32,7 +32,7 @@ function renderPOTable() {
     (po) =>
       (po.po_number.toLowerCase().includes(search) ||
         Data.mockSuppliers
-          .find((s) => s.id === po.supplier_id)
+          .find((s) => s.id == po.supplier_id)
           ?.name.toLowerCase()
           .includes(search)) &&
       (status === "all" || po.status === status)
@@ -40,38 +40,38 @@ function renderPOTable() {
   const tableBody = document.getElementById("poTableBody");
   tableBody.innerHTML = filteredPOs
     .map((po) => {
-      const supplier = Data.mockSuppliers.find((s) => s.id === po.supplier_id);
+      const supplier = Data.mockSuppliers.find((s) => s.id == po.supplier_id);
       const canReceive =
         po.status === "Disetujui" || po.status === "Diterima Sebagian";
       return `
-            <tr class="bg-white border-b hover:bg-gray-50">
-                <td class="px-6 py-4 font-medium text-gray-900">${
-                  po.po_number
-                }</td>
-                <td class="px-6 py-4">${supplier?.name || "N/A"}</td>
-                <td class="px-6 py-4">${formatDate(po.order_date)}</td>
-                <td class="px-6 py-4 text-right font-medium">${formatCurrency(
-                  po.total_amount
-                )}</td>
-                <td class="px-6 py-4 text-center">${getStatusBadge(
-                  po.status
-                )}</td>
-                <td class="px-6 py-4 text-center space-x-2 whitespace-nowrap">
-                    ${
-                      canReceive
-                        ? `<button onclick="openReceiptModal(${po.id})" class="bg-green-600 text-white px-3 py-1 text-xs rounded hover:bg-green-700">Terima Barang</button>`
-                        : ""
-                    }
-                    <button onclick="openPOModal(${
-                      po.id
-                    })" class="text-blue-600 hover:underline text-xs">Edit</button>
-                    ${
-                      po.status === "Draft"
-                        ? `<button onclick="openDeleteModal('po', ${po.id}, '${po.po_number}')" class="text-red-600 hover:underline text-xs">Hapus</button>`
-                        : ""
-                    }
-                </td>
-            </tr>`;
+              <tr class="bg-white border-b hover:bg-gray-50">
+                  <td class="px-6 py-4 font-medium text-gray-900">${
+                    po.po_number
+                  }</td>
+                  <td class="px-6 py-4">${supplier?.name || "N/A"}</td>
+                  <td class="px-6 py-4">${formatDate(po.order_date)}</td>
+                  <td class="px-6 py-4 text-right font-medium">${formatCurrency(
+                    po.total_amount
+                  )}</td>
+                  <td class="px-6 py-4 text-center">${getStatusBadge(
+                    po.status
+                  )}</td>
+                  <td class="px-6 py-4 text-center space-x-2 whitespace-nowrap">
+                      ${
+                        canReceive
+                          ? `<button onclick="openReceiptModal(${po.id})" class="bg-green-600 text-white px-3 py-1 text-xs rounded hover:bg-green-700">Terima Barang</button>`
+                          : ""
+                      }
+                      <button onclick="openPOModal(${
+                        po.id
+                      })" class="text-blue-600 hover:underline text-xs">Edit</button>
+                      ${
+                        po.status === "Draft"
+                          ? `<button onclick="openDeleteModal('po', ${po.id}, '${po.po_number}')" class="text-red-600 hover:underline text-xs">Hapus</button>`
+                          : ""
+                      }
+                  </td>
+              </tr>`;
     })
     .join("");
 }
@@ -594,34 +594,34 @@ function renderShipmentList() {
 
   listContainer.innerHTML = filtered
     .map((s) => {
-      const driver = Data.mockDrivers.find((d) => d.id === s.driver_id);
+      const driver = Data.mockDrivers.find((d) => d.id == s.driver_id);
       return `<div class="bg-white border rounded-lg p-4 shadow-sm">
-            <div class="flex justify-between items-start">
-                <div>
-                    <p class="font-semibold">${s.shipment_number}</p>
-                    <p class="text-sm text-gray-500">${
-                      s.departure_time
-                        ? formatDate(s.departure_time)
-                        : "Belum Berangkat"
-                    }</p>
-                </div>
-                ${getStatusBadge(s.status)}
-            </div>
-            <div class="mt-4 flex justify-between items-center">
-                <p class="text-sm">${s.delivery_lines.length} tujuan</p>
-                <div class="space-x-2">
-                    <button onclick="cetakSuratJalan(${
-                      s.id
-                    })" class="text-green-600 hover:underline text-sm">Cetak Surat Jalan</button>
-                    <button onclick="openShipmentModal(${
-                      s.id
-                    })" class="text-blue-600 hover:underline text-sm">Edit</button>
-                    <button onclick="openDeleteModal('distribusi', ${s.id}, '${
+              <div class="flex justify-between items-start">
+                  <div>
+                      <p class="font-semibold">${s.shipment_number}</p>
+                      <p class="text-sm text-gray-500">${
+                        s.departure_time
+                          ? formatDate(s.departure_time)
+                          : "Belum Berangkat"
+                      }</p>
+                  </div>
+                  ${getStatusBadge(s.status)}
+              </div>
+              <div class="mt-4 flex justify-between items-center">
+                  <p class="text-sm">${s.delivery_lines.length} tujuan</p>
+                  <div class="space-x-2">
+                      <button onclick="cetakSuratJalan('${
+                        s.id
+                      }')" class="text-green-600 hover:underline text-sm">Cetak Surat Jalan</button>
+                      <button onclick="openShipmentModal('${
+                        s.id
+                      }')" class="text-blue-600 hover:underline text-sm">Edit</button>
+                      <button onclick="openDeleteModal('distribusi', '${s.id}', '${
         s.shipment_number
       }')" class="text-red-600 hover:underline text-sm">Hapus</button>
-                </div>
-            </div>
-        </div>`;
+                  </div>
+              </div>
+          </div>`;
     })
     .join("");
 }
@@ -679,7 +679,7 @@ export function openShipmentModal(id = null) {
   );
 
   if (id) {
-    const shipment = Data.shipments.find((s) => s.id === id);
+    const shipment = Data.shipments.find((s) => s.id == id);
     if (!shipment) {
       console.error(`Shipment with ID ${id} not found`);
       return;
@@ -700,213 +700,202 @@ export function openShipmentModal(id = null) {
   }
   Alpine.store("modals").shipment = true;
 }
+
+/**
+ * Helper to get Indonesian day name from a date object.
+ * @param {Date} date - The date object.
+ * @returns {string} Day name in Indonesian.
+ */
+function getDayNameInIndonesian(date) {
+    const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    return days[date.getDay()];
+}
+
+/**
+ * Fungsi utama untuk membuat dan mencetak surat penerimaan dan pengembalian untuk setiap sekolah.
+ * @param {string} shipmentId - ID dari pengiriman yang akan dicetak.
+ */
 export function cetakSuratJalan(shipmentId) {
-  const s = Data.shipments.find((sh) => sh.id === shipmentId);
+  const s = Data.shipments.find((sh) => sh.id == shipmentId);
   if (!s) {
-    console.error(`Shipment with ID ${shipmentId} not found`);
+    showToast(`Pengiriman dengan ID ${shipmentId} tidak ditemukan`, "error");
     return;
   }
-  const driver = Data.mockDrivers.find((d) => d.id === s.driver_id);
-  const vehicle = Data.mockVehicles.find((v) => v.id === s.vehicle_id);
-  const recipe = Data.mockRecipes.find((r) => r.id === s.recipe_id);
+  const driver = Data.mockDrivers.find((d) => d.id == s.driver_id);
+  const vehicle = Data.mockVehicles.find((v) => v.id == s.vehicle_id);
+  const recipe = Data.mockRecipes.find((r) => r.id == s.recipe_id);
+
   if (!driver || !vehicle || !recipe) {
-    console.error("Missing driver, vehicle, or recipe data");
+    showToast("Data driver, kendaraan, atau resep tidak lengkap.", "error");
     return;
   }
 
-  // Format tanggal dan waktu
+  // Format tanggal dan waktu umum
   const departureDate = new Date(s.departure_time);
-  const formattedDate = formatDate(departureDate.toISOString().split("T")[0]);
+  const displayDate = `${String(departureDate.getDate()).padStart(2, '0')}/${String(departureDate.getMonth() + 1).padStart(2, '0')}/${String(departureDate.getFullYear()).slice(-2)}`;
+  const dayName = getDayNameInIndonesian(departureDate);
   const formattedTime = departureDate.toTimeString().substring(0, 5);
 
-  // Hitung total porsi
-  const totalPortions = s.delivery_lines.reduce(
-    (sum, line) => sum + line.quantity,
-    0
-  );
+  let allDocumentsHtml = '';
 
-  // Generate daftar sekolah tujuan
-  const schoolsList = s.delivery_lines
-    .map((line) => {
-      const school = Data.mockSchools.find((sc) => sc.id === line.school_id);
-      if (!school) {
-        console.error(`School with ID ${line.school_id} not found`);
-        return "";
-      }
-      return `<div class="mb-2">
-        <strong>${school.name}</strong><br>
-        <small>${school.address}</small><br>
-        <span>Jumlah: ${line.quantity} Porsi</span>
-      </div>`;
-    })
-    .join("");
+  // Loop untuk setiap sekolah dalam pengiriman
+  s.delivery_lines.forEach(line => {
+    const school = Data.mockSchools.find((sc) => sc.id == line.school_id);
+    if (!school) {
+      console.error(`School with ID ${line.school_id} not found`);
+      return; 
+    }
+
+    const documentData = {
+        dayName,
+        displayDate,
+        formattedTime,
+        totalPortions: line.quantity,
+        schoolName: school.name,
+        driverName: driver.name,
+    };
+
+    allDocumentsHtml += generateCombinedPageHtml(documentData);
+  });
 
   const content = `<html>
     <head>
-      <title>Surat Jalan - ${s.shipment_number}</title>
+      <title>Berita Acara - ${s.shipment_number}</title>
       <style>
-        body {
-          font-family: Arial, sans-serif;
-          margin: 0;
-          padding: 20px;
-          font-size: 14px;
-        }
-        .document-container {
+        body { font-family: 'Times New Roman', Times, serif; margin: 0; padding: 0; font-size: 14px; color: black; }
+        .page-container {
+          width: 100%;
           max-width: 800px;
           margin: 0 auto;
-          border: 2px solid black;
           padding: 20px;
-        }
-        .header {
-          text-align: center;
-          margin-bottom: 20px;
-        }
-        .header h3 {
-          margin: 5px 0;
-        }
-        .document-details {
+          box-sizing: border-box;
+          height: 100vh;
           display: flex;
-          justify-content: space-between;
-          margin-bottom: 20px;
+          flex-direction: column;
         }
-        .document-details .left {
-          width: 50%;
-        }
-        .document-details .right {
-          width: 50%;
-          text-align: right;
-        }
-        .info-row {
+        .document-section {
+          height: 50%;
           display: flex;
+          flex-direction: column;
           justify-content: space-between;
-          margin-bottom: 10px;
+          padding: 10px 20px;
         }
-        .schools-list {
-          margin: 20px 0;
-          border: 1px solid #ddd;
-          padding: 10px;
-        }
-        .signatures {
-          margin-top: 40px;
-          display: flex;
-          justify-content: space-between;
-        }
-        .signature-box {
-          width: 30%;
-          text-align: center;
-        }
-        .signature-line {
-          height: 40px;
-          border-bottom: 1px solid black;
-          margin: 10px 0;
-        }
-        .stamp-placeholder {
-          text-align: center;
-          margin-top: 20px;
-          color: #777;
-        }
+        .doc-type-header { font-weight: bold; margin-bottom: 15px; text-decoration: underline; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h3 { margin: 0; text-decoration: underline; font-size: 16px; font-weight: bold; }
+        .content-body { line-height: 1.6; margin-bottom: 20px; }
+        .signatures { display: flex; justify-content: space-between; margin-top: 15px; width: 100%;}
+        .signature-box { width: 45%; text-align: center; }
+        .signature-box p { margin: 5px 0; }
+        .signature-space { height: 60px; }
+        .approver { display: flex; justify-content: center; margin-top: auto; padding-bottom: 10px; }
+        .approver-box { border: 1px solid black; padding: 5px 10px; text-align: center; width: 280px; }
+        .approver-box p { margin: 5px 0; }
+        
         @media print {
-          body {
-            padding: 0;
-          }
-          .document-container {
+          body { padding: 0; margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          .page-container {
             page-break-after: always;
+            border: none;
+            margin: 0;
+            padding: 40px;
+            height: 98vh; /* Adjust for printing */
           }
         }
       </style>
     </head>
     <body>
-      <div class="document-container">
-        <div class="header">
-          <h3>BERITA ACARA PENGERIMAAN PAKET MAKANAN</h3>
-          <h3>PROGRAM MAKAN BERGIZI</h3>
-        </div>
-        
-        <div class="document-details">
-          <div class="left">
-            <h4 style="border-bottom: 2px solid black; padding-bottom: 5px; display: inline-block;">Pengiriman MBG</h4>
-          </div>
-          <div class="right">
-            <div class="info-row">
-              <span>Tanggal:</span>
-              <span>${formattedDate}</span>
-            </div>
-            <div class="info-row">
-              <span>Waktu:</span>
-              <span>${formattedTime}</span>
-            </div>
-          </div>
-        </div>
-        
-        <div class="info-section">
-          <div class="info-row">
-            <span>No. Surat Jalan:</span>
-            <span>${s.shipment_number}</span>
-          </div>
-          <div class="info-row">
-            <span>Jumlah Paket Makanan:</span>
-            <span>${totalPortions.toLocaleString("id-ID")} Porsi</span>
-          </div>
-          <div class="info-row">
-            <span>Menu yang Dikirim:</span>
-            <span>${recipe.name}</span>
-          </div>
-          <div class="info-row">
-            <span>Dikirim dari:</span>
-            <span>${Data.mockProfilSPPG.nama}</span>
-          </div>
-          <div class="info-row">
-            <span>Driver:</span>
-            <span>${driver.name}</span>
-          </div>
-          <div class="info-row">
-            <span>Kendaraan:</span>
-            <span>${vehicle.plate_number}</span>
-          </div>
-        </div>
-        
-        <div class="schools-list">
-          <h4 style="margin-top: 0;">Daftar Sekolah Tujuan:</h4>
-          ${schoolsList}
-        </div>
-        
-        <div class="signatures">
-          <div class="signature-box">
-            <p>Dikirim oleh,</p>
-            <div class="signature-line"></div>
-            <p>${driver.name}</p>
-            <p>Driver</p>
-          </div>
-          <div class="signature-box">
-            <p>Diterima oleh,</p>
-            <div class="signature-line"></div>
-            <p>(___________________)</p>
-            <p>Penerima</p>
-          </div>
-          <div class="signature-box">
-            <p>Mengetahui,</p>
-            <div class="signature-line"></div>
-            <p>(___________________)</p>
-            <p>Manajer SPPG</p>
-          </div>
-        </div>
-        
-        <div class="stamp-placeholder">
-          <p>(Stempel)</p>
-        </div>
-        
-        <div class="mt-4 text-right">
-          <p>Hubungi: ${Data.mockProfilSPPG.telepon || "-"}</p>
-        </div>
-      </div>
+      ${allDocumentsHtml}
     </body>
   </html>`;
 
   const printWindow = window.open("", "_blank");
-  printWindow.document.write(content);
-  printWindow.document.close();
-  printWindow.focus();
+  if (printWindow) {
+      printWindow.document.write(content);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => {
+        printWindow.print();
+      }, 500);
+  } else {
+      showToast("Gagal membuka jendela cetak. Mohon izinkan pop-up untuk situs ini.", "error");
+  }
 }
+
+/**
+ * Fungsi pembantu untuk menghasilkan HTML satu halaman yang berisi DUA formulir (pengiriman & pengembalian).
+ * @param {object} data - Objek berisi data yang diperlukan.
+ * @returns {string} String HTML dari satu halaman lengkap.
+ */
+function generateCombinedPageHtml(data) {
+    const title = 'BERITA ACARA PENERIMAAN PAKET MAKANAN PROGRAM MAKAN BERGIZI';
+    const contentText = `Pada Hari <strong>${data.dayName}</strong> Tanggal <strong>${data.displayDate}</strong> jam <strong>${data.formattedTime}</strong> telah diterima paket makanan sejumlah : <strong>${data.totalPortions.toLocaleString("id-ID")}</strong> Porsi. <br>
+                Paket Makanan Bergizi dari Satuan Pelayanan Pemenuhan Gizi (SPPG) Khusus Sukasirna, Sukaluyu.`;
+
+    const approverHtml = `
+        <div class="approver">
+            <div class="approver-box">
+                <p>Mengetahui:</p>
+                <div style="height: 50px;"></div>
+                <p style="text-decoration: underline; font-weight: bold;">Sumarna,S.pd.</p>
+                <p>Kepala SPPG Khusus Sukasirna, sukaluyu</p>
+            </div>
+        </div>
+    `;
+
+    // Formulir 1: Pengiriman
+    const pengirimanHtml = `
+        <div class="document-section">
+            <div>
+                <div class="doc-type-header"><span>Pengiriman MBG</span></div>
+                <div class="header"><h3>${title}</h3></div>
+                <div class="content-body">${contentText}</div>
+                <div class="signatures">
+                    <div class="signature-box">
+                        <p>Yang menyerahkan :</p>
+                        <div class="signature-space"></div>
+                        <p>${data.driverName}<br><span>(Driver/Knet)</span></p>
+                        <p>No Telfon :</p>
+                    </div>
+                    <div class="signature-box">
+                        <p>Diterima Oleh :</p>
+                        <div class="signature-space"></div>
+                        <p>(___________________)<br><span>SMK ${data.schoolName}</span></p>
+                        <p>No Telfon :</p>
+                    </div>
+                </div>
+            </div>
+            ${approverHtml}
+        </div>`;
+
+    // Formulir 2: Pengambilan
+    const pengambilanHtml = `
+        <div class="document-section">
+            <div>
+                <div class="doc-type-header"><span>Pengambilan MBG</span></div>
+                <div class="header"><h3>${title}</h3></div>
+                <div class="content-body">${contentText}</div>
+                <div class="signatures">
+                    <div class="signature-box">
+                        <p>Yang menyerahkan :</p>
+                        <div class="signature-space"></div>
+                        <p>(___________________)<br><span>SMK ${data.schoolName}</span></p>
+                        <p>No Telfon :</p>
+                    </div>
+                    <div class="signature-box">
+                        <p>Diterima Oleh :</p>
+                        <div class="signature-space"></div>
+                        <p>${data.driverName}<br><span>(Driver/Knet)</span></p>
+                        <p>No Telfon :</p>
+                    </div>
+                </div>
+            </div>
+            ${approverHtml}
+        </div>`;
+
+    return `<div class="page-container">${pengirimanHtml}${pengambilanHtml}</div>`;
+}
+
 
 function handleShipmentSubmit(e) {
   e.preventDefault();
@@ -919,7 +908,7 @@ function handleShipmentSubmit(e) {
 
     if (!schoolSelect || !quantityInput) return;
 
-    const school_id = parseInt(schoolSelect.value);
+    const school_id = schoolSelect.value; // Keep as string
     const quantity = parseInt(quantityInput.value);
 
     if (school_id && quantity > 0) {
@@ -933,9 +922,9 @@ function handleShipmentSubmit(e) {
   }
 
   const shipmentData = {
-    driver_id: parseInt(document.getElementById("shipmentDriverId").value),
-    vehicle_id: parseInt(document.getElementById("shipmentVehicleId").value),
-    recipe_id: parseInt(document.getElementById("shipmentRecipeId").value),
+    driver_id: document.getElementById("shipmentDriverId").value,
+    vehicle_id: document.getElementById("shipmentVehicleId").value,
+    recipe_id: document.getElementById("shipmentRecipeId").value,
     delivery_lines,
   };
 
@@ -946,10 +935,11 @@ function handleShipmentSubmit(e) {
       showToast("Jadwal pengiriman berhasil diperbarui.");
     }
   } else {
-    const newId =
-      Data.shipments.length > 0
-        ? Math.max(...Data.shipments.map((s) => s.id)) + 1
-        : 601;
+    // Ensure new ID is a string and unique
+    const existingIds = Data.shipments.map(s => parseInt(String(s.id).replace( /^\D+/g, '')) || 0);
+    const maxId = existingIds.length > 0 ? Math.max(...existingIds) : 600;
+    const newId = `SHP${maxId + 1}`;
+
     const dateStr = new Date().toISOString().split("T")[0].replace(/-/g, "");
     const shipmentCountForDate =
       Data.shipments.filter((s) => s.shipment_number.includes(dateStr)).length +
@@ -1019,3 +1009,4 @@ export const deleteHandlers = {
     }
   },
 };
+
