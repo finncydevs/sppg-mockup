@@ -51,6 +51,7 @@ export let mockDrivers = loadFromLocalStorage("sppg_drivers", [
   { id: 301, name: "Budi Santoso" },
   { id: 302, name: "Agus Wijaya" },
 ]);
+
 export let mockVehicles = loadFromLocalStorage("sppg_vehicles", [
   { id: 401, plate_number: "D 1234 ABC" },
   { id: 402, plate_number: "B 5678 XYZ" },
@@ -74,8 +75,9 @@ export let mockSchools = loadFromLocalStorage("sppg_schools", [
 export let mockUsers = loadFromLocalStorage("sppg_users", [
   { id: 901, name: "Bapak Kepala", role: "Admin", password: "123" },
   { id: 902, name: "Ibu Manager", role: "Manajer SPPG", password: "123" },
-  { id: 903, name: "Budi Santoso", role: "Driver", password: "123" }, // Sesuaikan ID jika perlu
-]);// di dalam mockUsers
+  { id: 301, name: "Budi Santoso", role: "Driver", password: "123" }, // Sesuaikan ID jika perlu
+]);
+
 export let mockKaryawan = loadFromLocalStorage("sppg_karyawan", [
   {
     id: 1001,

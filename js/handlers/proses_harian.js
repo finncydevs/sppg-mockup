@@ -13,6 +13,8 @@ import {
 // BAGIAN A: PENGADAAN & PENERIMAAN
 // ===================================================================================
 export function setupPengadaanPage() {
+  // PENAMBAHAN: Guard clause untuk stabilitas
+  if (!document.getElementById("poTableBody")) return;
   renderPOTable();
   document
     .getElementById("searchInputPO")
@@ -26,6 +28,10 @@ export function setupPengadaanPage() {
 }
 
 function renderPOTable() {
+  // PENAMBAHAN: Guard clause untuk stabilitas
+  const tableBody = document.getElementById("poTableBody");
+  if (!tableBody) return;
+
   const search = document.getElementById("searchInputPO").value.toLowerCase();
   const status = document.getElementById("statusFilterPO").value;
   const filteredPOs = Data.purchaseOrders.filter(
@@ -37,7 +43,7 @@ function renderPOTable() {
           .includes(search)) &&
       (status === "all" || po.status === status)
   );
-  const tableBody = document.getElementById("poTableBody");
+
   tableBody.innerHTML = filteredPOs
     .map((po) => {
       const supplier = Data.mockSuppliers.find((s) => s.id == po.supplier_id);
@@ -78,6 +84,8 @@ function renderPOTable() {
 
 export function addPOItemLine(item = {}) {
   const container = document.getElementById("itemLines");
+  // PENAMBAHAN: Guard clause
+  if (!container) return;
   const newLine = document.createElement("div");
   newLine.className = "item-line grid grid-cols-12 gap-4 items-center";
   newLine.innerHTML = `<div class="col-span-6"><select class="item-select bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5" onchange="updatePOTotalAmount()">${generateSelectOptions(
@@ -93,7 +101,11 @@ export function addPOItemLine(item = {}) {
 
 export function updatePOTotalAmount() {
   let total = 0;
-  document.querySelectorAll("#itemLines .item-line").forEach((line) => {
+  const itemLines = document.querySelectorAll("#itemLines .item-line");
+  // PENAMBAHAN: Guard clause
+  if (itemLines.length === 0) return;
+
+  itemLines.forEach((line) => {
     const item = Data.mockItems.find(
       (i) => i.id == line.querySelector(".item-select").value
     );
@@ -105,6 +117,8 @@ export function updatePOTotalAmount() {
 
 export function openPOModal(poId = null) {
   const form = document.getElementById("poForm");
+  // PENAMBAHAN: Guard clause
+  if (!form) return;
   form.reset();
   document.getElementById("poId").value = "";
   document.getElementById("itemLines").innerHTML = "";
@@ -115,6 +129,10 @@ export function openPOModal(poId = null) {
   );
   if (poId) {
     const po = Data.purchaseOrders.find((p) => p.id === poId);
+    if (!po) {
+      showToast(`PO dengan ID ${poId} tidak ditemukan.`, "error");
+      return;
+    }
     document.getElementById(
       "modalTitlePO"
     ).textContent = `Edit PO ${po.po_number}`;
@@ -206,7 +224,10 @@ function handlePOSubmit(e) {
 
 export function openReceiptModal(poId) {
   const po = Data.purchaseOrders.find((p) => p.id === poId);
-  if (!po) return;
+  if (!po) {
+    showToast(`PO dengan ID ${poId} tidak ditemukan.`, "error");
+    return;
+  }
   document.getElementById("receiptPoId").value = poId;
   document.getElementById(
     "receiptModalTitle"
@@ -283,6 +304,8 @@ function handleReceiptSubmit(e) {
 // ===================================================================================
 export function setupProduksiStokPage() {
   const content = document.getElementById("production-content");
+  // PENAMBAHAN: Guard clause
+  if (!content) return;
   const tabs = document.querySelectorAll("#production-tabs .tab-button");
   const renderTabContent = (tabId) => {
     tabs.forEach((t) => {
@@ -312,6 +335,9 @@ export function setupProduksiStokPage() {
 }
 
 function renderStockTable() {
+  const stockTableBody = document.getElementById("stockTableBody");
+  // PENAMBAHAN: Guard clause
+  if (!stockTableBody) return;
   const search =
     document.getElementById("stockSearchInput")?.value.toLowerCase() || "";
   const aggregatedStock = Data.mockItems
@@ -332,7 +358,7 @@ function renderStockTable() {
       (item) =>
         item.totalQuantity > 0 && item.name.toLowerCase().includes(search)
     );
-  document.getElementById("stockTableBody").innerHTML = aggregatedStock
+  stockTableBody.innerHTML = aggregatedStock
     .map(
       (item) =>
         `<tr class="bg-white border-b"><td class="px-6 py-4 font-medium">${
@@ -376,6 +402,8 @@ export function openLotDetailModal(itemId) {
 
 function renderWorkOrderList() {
   const listEl = document.getElementById("workOrderList");
+  // PENAMBAHAN: Guard clause
+  if (!listEl) return;
   listEl.innerHTML = Data.workOrders
     .map((wo) => {
       const recipe = Data.mockRecipes.find((r) => r.id === wo.recipe_id);
@@ -400,6 +428,8 @@ function renderWorkOrderList() {
 
 export function openWorkOrderModal(id = null) {
   const form = document.getElementById("workOrderForm");
+  // PENAMBAHAN: Guard clause
+  if (!form) return;
   form.reset();
   document.getElementById("workOrderId").value = "";
   document.getElementById("woRecipeId").innerHTML = generateSelectOptions(
@@ -409,6 +439,10 @@ export function openWorkOrderModal(id = null) {
   );
   if (id) {
     const wo = Data.workOrders.find((w) => w.id === id);
+    if (!wo) {
+      showToast(`Perintah kerja dengan ID ${id} tidak ditemukan.`, "error");
+      return;
+    }
     document.getElementById(
       "modalTitleWO"
     ).textContent = `Edit Perintah Kerja: ${wo.wo_number}`;
@@ -470,6 +504,8 @@ function handleWorkOrderFormSubmit(e) {
 
 function renderMasterDataItemsTable() {
   const tableBody = document.getElementById("master-items-table");
+  // PENAMBAHAN: Guard clause
+  if (!tableBody) return;
   tableBody.innerHTML = Data.mockItems
     .map(
       (item) =>
@@ -494,10 +530,17 @@ function renderMasterDataItemsTable() {
 }
 
 export function openItemModal(id = null) {
-  document.getElementById("itemForm").reset();
+  const form = document.getElementById("itemForm");
+  // PENAMBAHAN: Guard clause
+  if (!form) return;
+  form.reset();
   document.getElementById("itemId").value = "";
   if (id) {
     const item = Data.mockItems.find((i) => i.id === id);
+    if (!item) {
+      showToast(`Item dengan ID ${id} tidak ditemukan.`, "error");
+      return;
+    }
     document.getElementById("modalTitleItem").textContent = "Edit Item";
     document.getElementById("itemId").value = item.id;
     document.getElementById("itemName").value = item.name;
@@ -546,16 +589,14 @@ export function setupDistribusiPage() {
   const startDateInput = document.getElementById("distribusiStartDate");
   const endDateInput = document.getElementById("distribusiEndDate");
 
-  if (startDateInput) {
+  // PENAMBAHAN: Guard clause untuk memastikan elemen ada sebelum menambah listener
+  if (startDateInput && endDateInput) {
     startDateInput.value = formatInputDate(today);
-    startDateInput.addEventListener("change", renderShipmentList);
-  }
-  if (endDateInput) {
     endDateInput.value = formatInputDate(today);
+    startDateInput.addEventListener("change", renderShipmentList);
     endDateInput.addEventListener("change", renderShipmentList);
+    renderShipmentList();
   }
-
-  renderShipmentList();
 }
 
 // FUNGSI BARU UNTUK MENGHITUNG STATUS DINAMIS
@@ -577,15 +618,24 @@ function getDynamicShipmentStatus(shipment) {
     return "Selesai"; // Semua tujuan sudah dilaporkan
   }
   if (reportedCount > 0) {
-    return "Berlangsung"; // Sebagian sudah dilaporkan
+    return "Berlangsung"; 
   }
 
-  return shipment.status; // Fallback untuk kondisi lain
+  return shipment.status; 
 }
 
 function renderShipmentList() {
-  const startDate = document.getElementById("distribusiStartDate").value;
-  const endDate = document.getElementById("distribusiEndDate").value;
+  const listContainer = document.getElementById("shipmentList");
+  const startDateInput = document.getElementById("distribusiStartDate");
+  const endDateInput = document.getElementById("distribusiEndDate");
+
+  // PENAMBAHAN: Guard clause untuk stabilitas
+  if (!listContainer || !startDateInput || !endDateInput) {
+    return;
+  }
+
+  const startDate = startDateInput.value;
+  const endDate = endDateInput.value;
 
   if (!startDate || !endDate) {
     return;
@@ -600,11 +650,6 @@ function renderShipmentList() {
     );
   });
 
-  const listContainer = document.getElementById("shipmentList");
-  if (!listContainer) {
-    return;
-  }
-
   if (filtered.length === 0) {
     listContainer.innerHTML = `<div class="text-center py-10 text-gray-500">Tidak ada jadwal pengiriman pada rentang tanggal ini.</div>`;
     return;
@@ -612,7 +657,6 @@ function renderShipmentList() {
 
   listContainer.innerHTML = filtered
     .map((s) => {
-      // PERUBAHAN DI SINI: Kita memanggil getDynamicShipmentStatus(s)
       const dynamicStatus = getDynamicShipmentStatus(s);
 
       return `<div class="bg-white border rounded-lg p-4 shadow-sm">
@@ -630,16 +674,14 @@ function renderShipmentList() {
             <div class="mt-4 flex justify-between items-center">
                 <p class="text-sm">${s.delivery_lines.length} tujuan</p>
                 <div class="space-x-2">
-                    <button onclick="cetakSuratJalan(${
-                      s.id
-                    })" class="text-green-600 hover:underline text-sm">Cetak Surat Jalan</button>
-                    <button onclick="openShipmentModal(${
-                      s.id
-                    })" class="text-blue-600 hover:underline text-sm">Detail/Edit</button>
-                    <button onclick="openDeleteModal('distribusi', ${s.id}, '${
+    <button onclick="cetakSuratJalan('${s.id }')" class="text-green-600 hover:underline text-sm">Cetak Surat Jalan</button>
+    <button onclick="openShipmentModal('${
+      s.id
+    }')" class="text-blue-600 hover:underline text-sm">Detail/Edit</button>
+    <button onclick="openDeleteModal('distribusi', '${s.id}', '${
         s.shipment_number
       }')" class="text-red-600 hover:underline text-sm">Hapus</button>
-                </div>
+</div>
             </div>
         </div>`;
     })
@@ -699,9 +741,12 @@ export function openShipmentModal(id = null) {
   );
 
   if (id) {
+    // REVISI: Menggunakan '==' untuk perbandingan longgar (string vs number)
     const shipment = Data.shipments.find((s) => s.id == id);
     if (!shipment) {
       console.error(`Shipment with ID ${id} not found`);
+      // PENAMBAHAN: Feedback untuk user
+      showToast(`Jadwal pengiriman dengan ID ${id} tidak ditemukan.`, "error");
       return;
     }
 
@@ -721,21 +766,13 @@ export function openShipmentModal(id = null) {
   Alpine.store("modals").shipment = true;
 }
 
-/**
- * Helper to get Indonesian day name from a date object.
- * @param {Date} date - The date object.
- * @returns {string} Day name in Indonesian.
- */
 function getDayNameInIndonesian(date) {
-    const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-    return days[date.getDay()];
+  const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+  return days[date.getDay()];
 }
 
-/**
- * Fungsi utama untuk membuat dan mencetak surat penerimaan dan pengembalian untuk setiap sekolah.
- * @param {string} shipmentId - ID dari pengiriman yang akan dicetak.
- */
 export function cetakSuratJalan(shipmentId) {
+  // REVISI: Menggunakan '==' untuk perbandingan longgar (string vs number)
   const s = Data.shipments.find((sh) => sh.id == shipmentId);
   if (!s) {
     showToast(`Pengiriman dengan ID ${shipmentId} tidak ditemukan`, "error");
@@ -750,29 +787,32 @@ export function cetakSuratJalan(shipmentId) {
     return;
   }
 
-  // Format tanggal dan waktu umum
   const departureDate = new Date(s.departure_time);
-  const displayDate = `${String(departureDate.getDate()).padStart(2, '0')}/${String(departureDate.getMonth() + 1).padStart(2, '0')}/${String(departureDate.getFullYear()).slice(-2)}`;
+  const displayDate = `${String(departureDate.getDate()).padStart(
+    2,
+    "0"
+  )}/${String(departureDate.getMonth() + 1).padStart(2, "0")}/${String(
+    departureDate.getFullYear()
+  ).slice(-2)}`;
   const dayName = getDayNameInIndonesian(departureDate);
   const formattedTime = departureDate.toTimeString().substring(0, 5);
 
-  let allDocumentsHtml = '';
+  let allDocumentsHtml = "";
 
-  // Loop untuk setiap sekolah dalam pengiriman
-  s.delivery_lines.forEach(line => {
+  s.delivery_lines.forEach((line) => {
     const school = Data.mockSchools.find((sc) => sc.id == line.school_id);
     if (!school) {
       console.error(`School with ID ${line.school_id} not found`);
-      return; 
+      return;
     }
 
     const documentData = {
-        dayName,
-        displayDate,
-        formattedTime,
-        totalPortions: line.quantity,
-        schoolName: school.name,
-        driverName: driver.name,
+      dayName,
+      displayDate,
+      formattedTime,
+      totalPortions: line.quantity,
+      schoolName: school.name,
+      driverName: driver.name,
     };
 
     allDocumentsHtml += generateCombinedPageHtml(documentData);
@@ -784,21 +824,11 @@ export function cetakSuratJalan(shipmentId) {
       <style>
         body { font-family: 'Times New Roman', Times, serif; margin: 0; padding: 0; font-size: 14px; color: black; }
         .page-container {
-          width: 100%;
-          max-width: 800px;
-          margin: 0 auto;
-          padding: 20px;
-          box-sizing: border-box;
-          height: 100vh;
-          display: flex;
-          flex-direction: column;
+          width: 100%; max-width: 800px; margin: 0 auto; padding: 20px; box-sizing: border-box;
+          height: 100vh; display: flex; flex-direction: column;
         }
         .document-section {
-          height: 50%;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          padding: 10px 20px;
+          height: 50%; display: flex; flex-direction: column; justify-content: space-between; padding: 10px 20px;
         }
         .doc-type-header { font-weight: bold; margin-bottom: 15px; text-decoration: underline; }
         .header { text-align: center; margin-bottom: 20px; }
@@ -814,13 +844,7 @@ export function cetakSuratJalan(shipmentId) {
         
         @media print {
           body { padding: 0; margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-          .page-container {
-            page-break-after: always;
-            border: none;
-            margin: 0;
-            padding: 40px;
-            height: 98vh; /* Adjust for printing */
-          }
+          .page-container { page-break-after: always; border: none; margin: 0; padding: 40px; height: 98vh; }
         }
       </style>
     </head>
@@ -831,28 +855,34 @@ export function cetakSuratJalan(shipmentId) {
 
   const printWindow = window.open("", "_blank");
   if (printWindow) {
-      printWindow.document.write(content);
-      printWindow.document.close();
-      printWindow.focus();
-      setTimeout(() => {
-        printWindow.print();
-      }, 500);
+    printWindow.document.write(content);
+    printWindow.document.close();
+    printWindow.focus();
+    // PENJELASAN: Timeout ini memberi waktu browser untuk me-render konten sebelum mencetak.
+    // Mungkin perlu disesuaikan jika konten sangat kompleks atau komputer lambat.
+    setTimeout(() => {
+      printWindow.print();
+    }, 500);
   } else {
-      showToast("Gagal membuka jendela cetak. Mohon izinkan pop-up untuk situs ini.", "error");
+    showToast(
+      "Gagal membuka jendela cetak. Mohon izinkan pop-up untuk situs ini.",
+      "error"
+    );
   }
 }
 
-/**
- * Fungsi pembantu untuk menghasilkan HTML satu halaman yang berisi DUA formulir (pengiriman & pengembalian).
- * @param {object} data - Objek berisi data yang diperlukan.
- * @returns {string} String HTML dari satu halaman lengkap.
- */
 function generateCombinedPageHtml(data) {
-    const title = 'BERITA ACARA PENERIMAAN PAKET MAKANAN PROGRAM MAKAN BERGIZI';
-    const contentText = `Pada Hari <strong>${data.dayName}</strong> Tanggal <strong>${data.displayDate}</strong> jam <strong>${data.formattedTime}</strong> telah diterima paket makanan sejumlah : <strong>${data.totalPortions.toLocaleString("id-ID")}</strong> Porsi. <br>
+  const title = "BERITA ACARA PENERIMAAN PAKET MAKANAN PROGRAM MAKAN BERGIZI";
+  const contentText = `Pada Hari <strong>${
+    data.dayName
+  }</strong> Tanggal <strong>${data.displayDate}</strong> jam <strong>${
+    data.formattedTime
+  }</strong> telah diterima paket makanan sejumlah : <strong>${data.totalPortions.toLocaleString(
+    "id-ID"
+  )}</strong> Porsi. <br>
                 Paket Makanan Bergizi dari Satuan Pelayanan Pemenuhan Gizi (SPPG) Khusus Sukasirna, Sukaluyu.`;
 
-    const approverHtml = `
+  const approverHtml = `
         <div class="approver">
             <div class="approver-box">
                 <p>Mengetahui:</p>
@@ -863,8 +893,7 @@ function generateCombinedPageHtml(data) {
         </div>
     `;
 
-    // Formulir 1: Pengiriman
-    const pengirimanHtml = `
+  const pengirimanHtml = `
         <div class="document-section">
             <div>
                 <div class="doc-type-header"><span>Pengiriman MBG</span></div>
@@ -888,8 +917,7 @@ function generateCombinedPageHtml(data) {
             ${approverHtml}
         </div>`;
 
-    // Formulir 2: Pengambilan
-    const pengambilanHtml = `
+  const pengambilanHtml = `
         <div class="document-section">
             <div>
                 <div class="doc-type-header"><span>Pengambilan MBG</span></div>
@@ -913,9 +941,8 @@ function generateCombinedPageHtml(data) {
             ${approverHtml}
         </div>`;
 
-    return `<div class="page-container">${pengirimanHtml}${pengambilanHtml}</div>`;
+  return `<div class="page-container">${pengirimanHtml}${pengambilanHtml}</div>`;
 }
-
 
 function handleShipmentSubmit(e) {
   e.preventDefault();
@@ -928,7 +955,8 @@ function handleShipmentSubmit(e) {
 
     if (!schoolSelect || !quantityInput) return;
 
-    const school_id = schoolSelect.value; // Keep as string
+    // REVISI: Menggunakan parseInt agar tipe data konsisten
+    const school_id = parseInt(schoolSelect.value);
     const quantity = parseInt(quantityInput.value);
 
     if (school_id && quantity > 0) {
@@ -942,23 +970,27 @@ function handleShipmentSubmit(e) {
   }
 
   const shipmentData = {
-    driver_id: document.getElementById("shipmentDriverId").value,
-    vehicle_id: document.getElementById("shipmentVehicleId").value,
-    recipe_id: document.getElementById("shipmentRecipeId").value,
+    // REVISI: Menggunakan parseInt agar tipe data konsisten
+    driver_id: parseInt(document.getElementById("shipmentDriverId").value),
+    vehicle_id: parseInt(document.getElementById("shipmentVehicleId").value),
+    recipe_id: parseInt(document.getElementById("shipmentRecipeId").value),
     delivery_lines,
   };
 
   if (id) {
+    // REVISI: Menggunakan '==' untuk perbandingan longgar (string vs number)
     const index = Data.shipments.findIndex((s) => s.id == id);
     if (index !== -1) {
       Data.shipments[index] = { ...Data.shipments[index], ...shipmentData };
-      showToast("Jadwal pengiriman berhasil diperbarui.");
+      showToast("Jadwal pengiriman berhasil diperbarui.", "success");
     }
   } else {
-    // Ensure new ID is a string and unique
-    const existingIds = Data.shipments.map(s => parseInt(String(s.id).replace( /^\D+/g, '')) || 0);
+    // Memastikan ID baru unik dan berupa string dengan prefix
+    const existingIds = Data.shipments.map(
+      (s) => parseInt(String(s.id).replace(/^\D+/g, "")) || 0
+    );
     const maxId = existingIds.length > 0 ? Math.max(...existingIds) : 600;
-    const newId = `SHP${maxId + 1}`;
+    const newId = `SHP${maxId + 1}`; // ID baru selalu string
 
     const dateStr = new Date().toISOString().split("T")[0].replace(/-/g, "");
     const shipmentCountForDate =
@@ -975,7 +1007,7 @@ function handleShipmentSubmit(e) {
       status: "Direncanakan",
     };
     Data.shipments.push(newShipment);
-    showToast("Jadwal pengiriman berhasil dibuat.");
+    showToast("Jadwal pengiriman berhasil dibuat.", "success");
   }
 
   Data.saveToLocalStorage("sppg_shipments", Data.shipments);
@@ -998,7 +1030,7 @@ export const deleteHandlers = {
       Data.purchaseOrders.splice(index, 1);
       Data.saveToLocalStorage("sppg_purchaseOrders", Data.purchaseOrders);
       renderPOTable();
-      showToast("PO berhasil dihapus.");
+      showToast("PO berhasil dihapus.", "success");
     }
   },
   produksi: (id) => {
@@ -1007,16 +1039,17 @@ export const deleteHandlers = {
       Data.workOrders.splice(index, 1);
       Data.saveToLocalStorage("sppg_workOrders", Data.workOrders);
       renderWorkOrderList();
-      showToast("Perintah kerja berhasil dihapus.");
+      showToast("Perintah kerja berhasil dihapus.", "success");
     }
   },
   distribusi: (id) => {
-    const index = Data.shipments.findIndex((s) => s.id === id);
+    // REVISI: Menggunakan '==' untuk perbandingan longgar (string vs number)
+    const index = Data.shipments.findIndex((s) => s.id == id);
     if (index > -1) {
       Data.shipments.splice(index, 1);
       Data.saveToLocalStorage("sppg_shipments", Data.shipments);
       renderShipmentList();
-      showToast("Jadwal pengiriman berhasil dihapus.");
+      showToast("Jadwal pengiriman berhasil dihapus.", "success");
     }
   },
   item: (id) => {
@@ -1025,8 +1058,7 @@ export const deleteHandlers = {
       Data.mockItems.splice(index, 1);
       Data.saveToLocalStorage("sppg_items", Data.mockItems);
       renderMasterDataItemsTable();
-      showToast("Item berhasil dihapus.");
+      showToast("Item berhasil dihapus.", "success");
     }
   },
 };
-
